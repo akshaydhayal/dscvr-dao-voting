@@ -33,40 +33,51 @@ const CreateProposal = () => {
         if (!publicKey) return;
         // console.log(publicKey)
         try {
-            const { proposalPDA } = await deriveProposalPDA(publicKey, proposalId)
-            setProposal(proposalPDA.toString());
-            console.log('Creating transaction...');
-            const trx = await program.methods.createProposal(title, description, proposalId, point)
-                .accounts({
-                    proposal: proposalPDA,
-                    user: publicKey,
-                    systemProgram: web3.SystemProgram.programId,
-                })
-                .transaction();
+          const { proposalPDA } = await deriveProposalPDA(publicKey, proposalId);
+          setProposal(proposalPDA.toString());
+          console.log("Creating transaction...");
+          const trx = await program.methods
+            .createProposal(title, description, proposalId, point)
+            .accounts({
+              proposal: proposalPDA,
+              user: publicKey,
+              systemProgram: web3.SystemProgram.programId,
+            })
+            .transaction();
 
-            console.log('Transaction created:', trx);
+          console.log("Transaction created:", trx);
 
-            console.log('Sending transaction...');
-            let trxSign;
-            if (walletAddress) {
-                trxSign = await signTransaction(
-                    trx
-                );
-            } else {
-                trxSign = await sendTransaction(
-                    trx,
-                    connection,
-                    { signers: [] }
-                );
-                const confirmation = await connection.confirmTransaction(trxSign, 'confirmed');
-                console.log('Transaction confirmed:', confirmation);
-            }
-            
-            console.log(
-                `View on explorer: https://solana.fm/tx/${trxSign}?cluster=devnet-alpha`
-            );
+          console.log("Sending transaction...");
+          let trxSign;
+          if (walletAddress) {
+            trxSign = await signTransaction(trx);
+          } else {
+            trxSign = await sendTransaction(trx, connection, { signers: [] });
+            const confirmation = await connection.confirmTransaction(trxSign, "confirmed");
+            console.log("Transaction confirmed:", confirmation);
+          }
 
-            
+          console.log(`View on explorer: https://solana.fm/tx/${trxSign}?cluster=devnet-alpha`);
+          // Save proposal data
+          const proposalData = {
+            title,
+            description,
+            address: proposalPDA.toString(),
+          };
+
+          const response = await fetch("/api/saveproposal", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(proposalData),
+          });
+
+          if (response.ok) {
+            console.log("Proposal saved successfully");
+          } else {
+            console.error("Failed to save proposal");
+          }
         } catch (error) {
             console.error('Error creating proposal:', error);
             setFailed(error)
