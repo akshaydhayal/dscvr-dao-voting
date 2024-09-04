@@ -1,71 +1,107 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Button } from "./ui/Button";
 
 interface FormData {
   title: string;
   description: string;
-  point: number | '';
+  point: number | "";
 }
+
 interface Form {
   createProposal: (title: string, description: string, point: number) => void;
 }
 
 const Dashboard: React.FC<Form> = ({ createProposal }) => {
-
   const [formData, setFormData] = useState<FormData>({
-    title: '',
-    description: '',
-    point: '',
+    title: "",
+    description: "",
+    point: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'number' ? parseInt(value) : value
+      [name]: type === "number" ? parseInt(value) : value,
     });
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (typeof formData.point === 'number') {
+    if (typeof formData.point === "number") {
       createProposal(formData.title, formData.description, formData.point);
     } else {
-      console.error('Point must be a number');
+      console.error("Point must be a number");
     }
   };
 
   return (
-    <section className="w-full py-[50px]">
-      <form onSubmit={handleSubmit} >
-      <div className="container max-w-5xl mx-auto w-full">
-        <div className="rounded-[10px] border-[1px] border-secondary p-6 flex flex-col items-center gap-[32px]">
-          <h2 className="text-[24px] font-extrabold leading-[31.2px] text-center">Make a new Proposal</h2>
-          
-            <div className="grid  grid-cols-12 gap-6 w-full contact-form">
-
-              <div className="form-group  col-span-12 sm:col-span-6 flex flex-col">
-                <label className="">Title *</label>
-                <input type="text" placeholder="Title for your proposal" className="form-control" name="title" value={formData.title}
-                  onChange={handleChange} />
-              </div>
-              <div className="form-group  col-span-12 sm:col-span-6 flex flex-col">
-                <label className="">Point *</label>
-                <input type="number" placeholder="..." className="form-control" name="point" value={formData.point}
-                  onChange={handleChange} />
-              </div>
-              <div className="col-span-12 flex flex-col form-group">
-                <label>Description *</label>
-                <textarea className="form-control" placeholder="Explain your proposal" name="description" value={formData.description}
-                  onChange={handleChange} />
-              </div>
-
-            </div>
-            <Button type="submit" className="w-fit">Create Proposal</Button>
-          
+    <section className="w-full py-12 bg-gradient-to-r from-teal-400 via-green-400 to-yellow-400 text-gray-800">
+      {/* Banner Section */}
+      <div className="relative w-full h-72 overflow-hidden rounded-lg shadow-lg">
+        <img src="/meta.png" alt="DAO Voting Banner" className="object-cover w-full h-full" />
+        <div className="absolute inset-0 bg-black opacity-30"></div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+          <h1 className="text-5xl font-bold text-white mb-2">DAO Voting Platform</h1>
+          <p className="text-xl text-white">Participate in the decision-making process of the DAO. Create and vote on proposals.</p>
         </div>
       </div>
-      </form>
+
+      {/* Proposal Form Section */}
+      <div className="container max-w-4xl mx-auto mt-12 px-4">
+        <div className="p-8 bg-white rounded-lg shadow-lg border border-gray-300">
+          <h2 className="text-3xl font-semibold text-gray-800 text-center mb-6">Create a New Proposal</h2>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {/* Title Input */}
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-medium mb-2">Title *</label>
+                <input
+                  type="text"
+                  placeholder="Title for your proposal"
+                  className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* Points Input */}
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-medium mb-2">Points *</label>
+                <input
+                  type="number"
+                  placeholder="e.g., 10"
+                  className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  name="point"
+                  value={formData.point}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            {/* Description Input */}
+            <div className="flex flex-col">
+              <label className="text-gray-700 font-medium mb-2">Description *</label>
+              <textarea
+                className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                placeholder="Explain your proposal"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows={4}
+              />
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-center">
+              <Button type="submit" className="px-6 py-3 text-white bg-teal-500 rounded-lg hover:bg-teal-600 transition">
+                Create Proposal
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
     </section>
   );
 };

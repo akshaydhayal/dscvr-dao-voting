@@ -31,7 +31,7 @@ export default function Container({ children }: { children: ReactNode }) {
   }, [iframe]); // Add iframe as a dependency
 
   return (
-    <main ref={containerRef} className="m-5">
+    <main ref={containerRef} className="m-0">
       {children}
     </main>
   );
