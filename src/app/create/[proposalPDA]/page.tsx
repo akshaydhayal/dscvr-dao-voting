@@ -32,21 +32,31 @@ const Proposals = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasClientRef = useRef<CanvasClient | undefined>();
   const { connectWallet, walletAddress, iframe } = useCanvasWallet();
+  const [voteSuccess,setVoteSuccess]=useState(false);
+  const [forVote,setForVote]=useState(0);
+  const [againstVote,setAgainstVote]=useState(0);
+  const [abstainVote,setAbstainVote]=useState(0);
 
   if (iframe && walletAddress) {
     const pubKey = new PublicKey(walletAddress);
     publicKey = pubKey;
   }
 
+  console.log("for votes : ",forVote);
   useEffect(() => {
     const fetchProposal = async () => {
       try {
         const proposal = await program.account.proposal.fetch(proposalPDA as string);
+        setForVote(proposal.votesFor.toNumber()+1);
+        setAgainstVote(proposal.votesAgainst.toNumber());
+        setAbstainVote(proposal.votesAbstain.toNumber());
         setProposal(proposal);
-
+        
         if (!publicKey) return;
-
+        
         const voters = await program.account.voter.all();
+        console.log('voters');
+        console.log(voters);
         const userHasVoted = voters.some(
           (voter) => voter.account.user.equals(publicKey) && voter.account.proposal.equals(new PublicKey(proposalPDA as string))
         );
@@ -55,13 +65,22 @@ const Proposals = () => {
         console.error("Error fetching proposal:", error);
       }
     };
+    console.log('b');
 
+    
     fetchProposal();
-  }, [publicKey]);
-
+  }, [publicKey,voteSuccess]);
+  
   const refreshProposals = async () => {
     try {
       if (!publicKey) return;
+      console.log('a');
+      const proposal = await program.account.proposal.fetch(proposalPDA as string);
+      setProposal(proposal);
+      setForVote(proposal.votesFor.toNumber());
+      setAgainstVote(proposal.votesAgainst.toNumber());
+      setAbstainVote(proposal.votesAbstain.toNumber());
+
       const voters = await program.account.voter.all();
       const userHasVoted = voters.some((voter) => voter.account.user.equals(publicKey) && voter.account.proposal.equals(new PublicKey(proposalPDA as string)));
       setHasVoted(userHasVoted);
@@ -70,65 +89,104 @@ const Proposals = () => {
     }
   };
 
+  const [btnClickedWithoutConnect,setBtnClickedWithoutConnect]=useState(false)
+  const [showConnectModal,setShowConnectModal]=useState(true);
+  
+  const {wallet}=useWallet();
+  if(wallet?.adapter.disconnect){
+    console.log("wallet disconnected!");
+    // setBtnClickedWithoutConnect(false);
+  }
   return (
-    <>
-      {publicKey || walletAddress ? (
-        <>
-          <Navbar />
-          <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black bg-opacity-95 text-white animate-fadeIn">
-            <div className="relative w-full max-w-4xl mx-auto p-4 bg-gradient-to-br from-gray-800 to-black border border-indigo-800 rounded-lg shadow-lg shadow-indigo-700 transform transition duration-500 hover:shadow-indigo-800">
-              {proposal ? (
-                <>
-                  {/* Banner Section */}
-                  <div className="relative w-full h-40 overflow-hidden rounded-lg shadow-lg">
-                    <img src="/meta.png" alt="DAO Banner" className="object-cover w-full h-full opacity-80 transform transition duration-500 hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70"></div>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                      <h1 className="text-5xl font-serif tracking-wide font-bold text-blue-400 drop-shadow-lg transform transition duration-500 hover:scale-105">
-                        Solana DAO
-                      </h1>
+    <div className="relative">
+      {/* {publicKey || walletAddress ? ( */}
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black bg-opacity-95 text-white animate-fadeIn">
+          <div className="relative w-full max-w-4xl mx-auto p-4 bg-gradient-to-br from-gray-800 to-black border border-indigo-800 rounded-lg shadow-lg shadow-indigo-700 transform transition duration-500 hover:shadow-indigo-800">
+            {proposal ? (
+              <>
+                {/* Banner Section */}
+                <div className="relative w-full h-40 overflow-hidden rounded-lg shadow-lg">
+                  <img src="/meta.png" alt="DAO Banner" className="object-cover w-full h-full opacity-80 transform transition duration-500 hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70"></div>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+                    <h1 className="text-5xl font-serif tracking-wide font-bold text-blue-400 drop-shadow-lg transform transition duration-500 hover:scale-105">
+                      Solana DAO
+                    </h1>
+                  </div>
+                </div>
+
+                {/* Voting Section */}
+                <div className="mt-5 text-center">
+                  <h2 className="text-3xl font-semibold text-yellow-200 mb-2 drop-shadow-md transform transition duration-500 font-mono">{proposal.title}</h2>
+                  <p className="text-lg text-teal-100 mb-8 leading-relaxed transform transition duration-500">{proposal.description}</p>
+
+                  <div className="grid grid-cols-3 gap-6 mb-8">
+                    <div className="bg-gradient-to-b from-gray-700 to-gray-900 p-4 px-6 rounded-lg cursor-pointer shadow-lg transform transition duration-500 hover:scale-105 hover:shadow-xl">
+                      <h3 className="text-xl text-cyan-400 font-medium font-mono">Votes For:</h3>
+                      {/* <p className="text-4xl font-medium text-white mt-0 font-serif">{proposal.votesFor.toNumber()}</p> */}
+                      <p className="text-4xl font-medium text-white mt-0 font-serif">{forVote}</p>
+                    </div>
+                    <div className="bg-gradient-to-b from-gray-700 to-gray-900 p-4 rounded-lg shadow-lg cursor-pointer transform transition duration-500 hover:scale-105 hover:shadow-xl">
+                      <h3 className="text-xl text-purple-400 font-medium font-mono">Votes Against:</h3>
+                      {/* <p className="text-4xl font-medium text-white mt-0 font-serif">{proposal.votesAgainst.toNumber()}</p> */}
+                      <p className="text-4xl font-medium text-white mt-0 font-serif">{againstVote}</p>
+                    </div>
+                    <div className="bg-gradient-to-b from-gray-700 to-gray-900 p-4 rounded-lg shadow-lg cursor-pointer transform transition duration-500 hover:scale-105 hover:shadow-xl">
+                      <h3 className="text-xl text-pink-400 font-medium font-mono">Votes Abstain:</h3>
+                      {/* <p className="text-4xl font-medium text-white mt-0 font-serif">{proposal.votesAbstain.toNumber()}</p> */}
+                      <p className="text-4xl font-medium text-white mt-0 font-serif">{abstainVote}</p>
                     </div>
                   </div>
 
-                  {/* Voting Section */}
-                  <div className="mt-5 text-center">
-                    <h2 className="text-3xl font-semibold text-yellow-200 mb-2 drop-shadow-md transform transition duration-500 font-mono">{proposal.title}</h2>
-                    <p className="text-lg text-teal-100 mb-8 leading-relaxed transform transition duration-500">{proposal.description}</p>
+                  <Voting proposalPDA={new PublicKey(proposalPDA as string)} voted={hasVoted} onVote={refreshProposals} 
+                  setBtnClickedWithoutConnect={setBtnClickedWithoutConnect} setVoteSuccess={setVoteSuccess}/>
 
-                    <div className="grid grid-cols-3 gap-6 mb-8">
-                      <div className="bg-gradient-to-b from-gray-700 to-gray-900 p-4 px-6 rounded-lg cursor-pointer shadow-lg transform transition duration-500 hover:scale-105 hover:shadow-xl">
-                        <h3 className="text-xl text-cyan-400 font-medium font-mono">Votes For:</h3>
-                        <p className="text-4xl font-medium text-white mt-0 font-serif">{proposal.votesFor.toNumber()}</p>
-                      </div>
-                      <div className="bg-gradient-to-b from-gray-700 to-gray-900 p-4 rounded-lg shadow-lg cursor-pointer transform transition duration-500 hover:scale-105 hover:shadow-xl">
-                        <h3 className="text-xl text-purple-400 font-medium font-mono">Votes Against:</h3>
-                        <p className="text-4xl font-medium text-white mt-0 font-serif">{proposal.votesAgainst.toNumber()}</p>
-                      </div>
-                      <div className="bg-gradient-to-b from-gray-700 to-gray-900 p-4 rounded-lg shadow-lg cursor-pointer transform transition duration-500 hover:scale-105 hover:shadow-xl">
-                        <h3 className="text-xl text-pink-400 font-medium font-mono">Votes Abstain:</h3>
-                        <p className="text-4xl font-medium text-white mt-0 font-serif">{proposal.votesAbstain.toNumber()}</p>
-                      </div>
-                    </div>
+                  {hasVoted && <p className="mt-6 text-red-500 font-semibold animate-bounce">You Have Voted</p>}
+                </div>
+              </>
+            ) : (
+              <p className="text-center">Proposal not found</p>
+            )}
+          </div>
+        </div>
+      </>
+      {/* 
+      // ) : 
+      // (
+      //   <div className="flex items-center justify-center min-h-screen">
+      //     <div className="border hover:border-slate-900 rounded">
+      //       {iframe ? <Button onClick={connectWallet}>Connect Wallet</Button> : <WalletMultiButton />}
+      //     </div>
+      //   </div>
+      // )
+      // } */}
 
-                    <Voting proposalPDA={new PublicKey(proposalPDA as string)} voted={hasVoted} onVote={refreshProposals} />
-
-                    {hasVoted && <p className="mt-6 text-red-500 font-semibold animate-bounce">You Have Voted</p>}
-                  </div>
-                </>
+      {/* {!publicKey && btnClickedWithoutConnect && showConnectModal && ( */}
+      {!publicKey && btnClickedWithoutConnect  && (
+        <div className="w-screen h-screen absolute top-0 backdrop-blur-md flex justify-center items-center">
+          <div className="flex items-center bg-[#121212] justify-center border w-80 h-40 border-red-600">
+            <div className="border hover:border-slate-900 rounded">
+              {/* {iframe ? <Button onClick={connectWallet}>Connect Wallet</Button> : <WalletMultiButton />} */}
+              {iframe ? (
+                <Button
+                  onClick={() => {
+                    connectWallet();
+                    setBtnClickedWithoutConnect(true);
+                  }}
+                >
+                  Connect Wallet
+                </Button>
               ) : (
-                <p className="text-center">Proposal not found</p>
+                <WalletMultiButton />
               )}
             </div>
-          </div>
-        </>
-      ) : (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="border hover:border-slate-900 rounded">
-            {iframe ? <Button onClick={connectWallet}>Connect Wallet</Button> : <WalletMultiButton />}
+            <button className="bg-white text-black p-1" onClick={()=>setBtnClickedWithoutConnect(false)}>Close</button>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

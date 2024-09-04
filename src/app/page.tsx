@@ -2,6 +2,7 @@
 
 import CreateProposalModal from "@/components/CreateModal";
 import Navbar from "@/components/Navbar";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 interface Proposal {
@@ -18,6 +19,7 @@ interface HomepageProps {
 const DarkRetroThemeHomepage: React.FC<HomepageProps> = () => {
   const [proposals, setProposal] = useState<Proposal[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router=useRouter();
 
   useEffect(() => {
     async function getProposals() {
@@ -68,7 +70,7 @@ const DarkRetroThemeHomepage: React.FC<HomepageProps> = () => {
         <div className="space-y-6">
           {proposals.length > 0 &&
             proposals.map((proposal, index) => (
-              <div
+              <div onClick={()=>router.push(`/create/${proposal.address}`)}
                 key={index}
                 className="p-6 bg-gray-800 rounded-xl shadow-md shadow-slate-600 border hover:border-2 cursor-pointer border-gray-500 hover:bg-gray-700 transition-all duration-300"
               >

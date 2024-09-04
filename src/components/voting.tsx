@@ -11,79 +11,98 @@ if (typeof window !== 'undefined') {
     window.Buffer = Buffer;
 }
 
-const Voting: React.FC<{ proposalPDA: web3.PublicKey, voted: boolean, onVote: () => void }> = ({ proposalPDA, voted, onVote }) => {
-    const { connection } = useConnection();
-    let { publicKey, sendTransaction } = useWallet();
-    const [loading, setLoading] = useState(false);
-    const { walletAddress, signTransaction } = useCanvasWallet();
-    if(walletAddress){
-        console.log(walletAddress)
-        const pubKey = new PublicKey(walletAddress)
-        publicKey = pubKey
+const Voting: React.FC<{ proposalPDA: web3.PublicKey; voted: boolean; onVote: () => void }> = ({ proposalPDA, voted, onVote, setBtnClickedWithoutConnect,setVoteSuccess }) => {
+  const { connection } = useConnection();
+  let { publicKey, sendTransaction } = useWallet();
+  const [loading, setLoading] = useState(false);
+  const { walletAddress, signTransaction } = useCanvasWallet();
+  if (walletAddress) {
+    console.log(walletAddress);
+    const pubKey = new PublicKey(walletAddress);
+    publicKey = pubKey;
+  }
+
+  const vote = async (voteOption: "For" | "Against" | "Abstain") => {
+    if (!publicKey) return;
+
+    setLoading(true);
+    const { voterPDA } = await deriveVoterPDA(publicKey, proposalPDA);
+    try {
+      let voteMethod;
+      if (voteOption === "For") {
+        voteMethod = program.methods.vote({ for: {} });
+      } else if (voteOption === "Against") {
+        voteMethod = program.methods.vote({ against: {} });
+      } else {
+        voteMethod = program.methods.vote({ abstain: {} });
+      }
+      if (!voteMethod) {
+        console.log("ohh");
+      }
+      const trx = new web3.Transaction().add(
+        await voteMethod
+          .accounts({
+            proposal: proposalPDA,
+            voter: voterPDA,
+            user: publicKey,
+            systemProgram: web3.SystemProgram.programId,
+          })
+          .instruction()
+      );
+
+      let trxSignature;
+      if (walletAddress) {
+        trxSignature = await signTransaction(trx);
+      } else {
+        trxSignature = await sendTransaction(trx, connection, { signers: [] });
+        console.log(`Vote transaction sent: ${trxSignature}`);
+      }
+      const account = program.account.proposal.fetch(proposalPDA);
+      console.log(account);
+
+      onVote();
+      setVoteSuccess(true);
+    } catch (error) {
+      console.error("Error voting:", error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const vote = async (voteOption: "For" | "Against" | "Abstain") => {
-
-        if (!publicKey) return;
-
-        setLoading(true)
-        const { voterPDA } = await deriveVoterPDA(publicKey, proposalPDA)
-        try {
-            let voteMethod;
-            if (voteOption === "For") {
-                voteMethod = program.methods.vote({ for: {} });
-            } else if (voteOption === "Against") {
-                voteMethod = program.methods.vote({ against: {} });
-            } else {
-                voteMethod = program.methods.vote({ abstain: {} });
-            }
-            if (!voteMethod) {
-                console.log("ohh")
-            }
-            const trx = new web3.Transaction().add(
-                await voteMethod
-                    .accounts({
-                        proposal: proposalPDA,
-                        voter: voterPDA,
-                        user: publicKey,
-                        systemProgram: web3.SystemProgram.programId,
-                    })
-                    .instruction()
-
-            );
-
-            let trxSignature;
-            if (walletAddress) {
-                trxSignature = await signTransaction(trx)
-            } else {
-
-                trxSignature = await sendTransaction(trx, connection, { signers: [] });
-                console.log(`Vote transaction sent: ${trxSignature}`);
-            }
-            const account = program.account.proposal.fetch(proposalPDA);
-            console.log(account)
-
-            onVote();
-        } catch (error) {
-            console.error('Error voting:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <div className="flex items-center justify-center gap-[32px]">
-            {loading ?
-                <Button onClick={() => vote('For')} disabled={true} variant="primary">Voting...</Button> :
-                <>
-                    <Button onClick={() => vote('For')} disabled={voted} variant="primary">Vote For</Button>
-                    <Button variant="secondary" onClick={() => vote('Against')} disabled={voted}>Vote Against</Button>
-                    <Button variant="outline" onClick={() => vote('Abstain')} disabled={voted}>Vote Abstain</Button>
-                </>
-            }
-
-        </div>
-    );
+  return (
+    <div className="flex items-center justify-center gap-[32px]">
+      {loading ? (
+        <Button className='bg-teal-200 p-4 px-8 text-xl font-semibold text-black' onClick={() => vote("For")} disabled={true} variant="primary">
+          Voting...
+        </Button>
+      ) : (
+        <>
+          <Button
+            onClick={() => {
+              vote("For");
+              setBtnClickedWithoutConnect(true);
+            }}
+            disabled={voted}
+            variant="primary"
+          >
+            Vote For
+          </Button>
+          <Button variant="secondary" onClick={() => {
+            vote("Against")
+            setBtnClickedWithoutConnect(true);
+        }} disabled={voted}>
+            Vote Against
+          </Button>
+          <Button variant="outline" onClick={() => {
+            vote("Abstain")
+            setBtnClickedWithoutConnect(true);
+        }} disabled={voted}>
+            Vote Abstain
+          </Button>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default Voting;
