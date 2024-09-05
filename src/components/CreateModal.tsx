@@ -24,6 +24,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
   const [proposal, setProposal] = useState<any>(null);
   const [failed, setFailed] = useState<any>(null);
   const { connectWallet, walletAddress, signTransaction } = useCanvasWallet();
+  const [proposalCreateLoading,setProposalCreateLoading]=useState(false);
 
   let publicKey = walletPublicKey;
 
@@ -80,6 +81,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
 
       if (response.ok) {
         console.log("Proposal saved successfully");
+        setProposalCreateLoading(false);
         setProposall(old=>[...old,proposalData]);
         onClose(); // Close the modal after success
       } else {
@@ -97,33 +99,66 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 border">
       <div className="p-8 rounded-lg shadow-md shadow-slate-400 w-1/2 bg-[#121212] mx-auto ">
         <h2 className="text-2xl font-semibold mb-4">Create New Proposal</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-0">
           <div>
             <label className="block text-sm font-medium mb-2">Title</label>
-            <input type="text" value={title} placeholder="Enter Proposal title" onChange={(e) => setTitle(e.target.value)} className="w-full text-slate-700 placeholder:text-slate-500 placeholder:text-sm border border-gray-300 p-2 rounded" required />
+            <input
+              type="text"
+              value={title}
+              placeholder="Proposal Title (20 chars limit)"
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full text-slate-700 placeholder:text-slate-500 placeholder:text-sm border border-gray-300 p-2 rounded"
+              required maxLength={20}
+            />
+            <div className="text-right text-xs text-slate-200 mt-0">{title.length}/20 characters</div>
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Description</label>
-            <textarea value={description} placeholder="Write about proposal" onChange={(e) => setDescription(e.target.value)} className="w-full text-slate-800 placeholder:text-slate-500 placeholder:text-sm border border-gray-300 p-2 rounded" required />
+            <textarea
+              value={description}
+              placeholder="Description (120 characters limit)"
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full text-slate-800 placeholder:text-slate-500 placeholder:text-sm border border-gray-300 p-2 rounded"
+              required
+              maxLength={100}
+              />
+            <div className="text-right text-xs text-slate-200 mt-0">{description.length}/100 characters</div>
           </div>
-          <div>
+          <div className="">
             <label className="block text-sm font-medium mb-2">Points</label>
-            <input type="number" placeholder="Enter points" value={point} onChange={(e) => setPoint(e.target.value)} className="w-full border text-slate-800 placeholder:text-slate-500 placeholder:text-sm border-gray-300 p-2 rounded" required />
+            <input
+              type="number"
+              placeholder="Enter points"
+              value={point}
+              onChange={(e) => setPoint(e.target.value)}
+              className="w-full border text-slate-800 placeholder:text-slate-500 placeholder:text-sm border-gray-300 p-2 rounded"
+              required
+            />
           </div>
-          <div className="flex justify-between">
-            <button type="submit" className="px-4 py-2 bg-blue-500 text-white font-medium  rounded-md">
-              Create Proposal
-            </button>
-            <button type="button" onClick={onClose} className="bg-slate-600 px-5 py-2 rounded-md">
+          <div className="flex justify-between mt-4">
+            {!proposalCreateLoading ? (
+              <button
+                type="submit"
+                className="px-4 py-2 mt-4 bg-blue-600 hover:bg-blue-500 text-white font-medium  rounded-md"
+                onClick={(e) => {
+                  setProposalCreateLoading(true);
+                  handleSubmit(e);
+                }}
+              >
+                Create Proposal
+              </button>
+            ) : (
+              <div className="flex items-center gap-4 bg-blue-600 py-2 mt-4 px-2 justify-center rounded-md">
+                <h2 className="text-lg font-medium text-white ">Creating Proposal</h2>
+                <div className="loader border-b-4  border-slate-100 rounded-full w-6 h-6 animate-spin"></div>
+              </div>
+            )}
+
+            <button type="button" onClick={onClose} className="bg-slate-600 mt-4 px-5 py-2 rounded-md">
               Cancel
             </button>
           </div>
         </form>
-        {proposal && (
-          <p>
-            Your proposal link (valid if transaction is successful): {process.env.NEXT_PUBLIC_URL}/voting/{proposal}
-          </p>
-        )}
         {failed && <p className="text-red-500">Error: {failed.message}</p>}
       </div>
     </div>

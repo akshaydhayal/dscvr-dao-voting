@@ -72,10 +72,14 @@ const Voting: React.FC<{ proposalPDA: web3.PublicKey; voted: boolean; onVote: ()
   return (
     <div className="flex items-center justify-center gap-[32px]">
       {loading ? (
-        <Button className='bg-teal-200 p-4 px-8 text-xl font-semibold text-black' onClick={() => vote("For")} disabled={true} variant="primary">
-          Voting...
-        </Button>
+        <div className="flex items-center gap-6 justify-center">
+          <h2 className="text-2xl font-bold text-slate-300 font-mono">Voting</h2>
+          <div className="loader border-b-4 border-blue-400 border-solid rounded-full w-7 h-7 animate-spin"></div>
+        </div>
       ) : (
+        // <Button className='bg-teal-200 p-4 px-8 text-xl font-semibold text-black' onClick={() => vote("For")} disabled={true} variant="primary">
+        //   Voting...
+        // </Button>
         <>
           <Button
             onClick={() => {
@@ -87,16 +91,24 @@ const Voting: React.FC<{ proposalPDA: web3.PublicKey; voted: boolean; onVote: ()
           >
             Vote For
           </Button>
-          <Button variant="secondary" onClick={() => {
-            vote("Against")
-            setBtnClickedWithoutConnect(true);
-        }} disabled={voted}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              vote("Against");
+              setBtnClickedWithoutConnect(true);
+            }}
+            disabled={voted}
+          >
             Vote Against
           </Button>
-          <Button variant="outline" onClick={() => {
-            vote("Abstain")
-            setBtnClickedWithoutConnect(true);
-        }} disabled={voted}>
+          <Button className='bg-blue-500 hover:bg-blue-400'
+            variant="outline"
+            onClick={() => {
+              vote("Abstain");
+              setBtnClickedWithoutConnect(true);
+            }}
+            disabled={voted}
+          >
             Vote Abstain
           </Button>
         </>

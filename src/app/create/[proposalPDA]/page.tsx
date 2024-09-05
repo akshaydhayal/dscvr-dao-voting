@@ -47,7 +47,8 @@ const Proposals = () => {
     const fetchProposal = async () => {
       try {
         const proposal = await program.account.proposal.fetch(proposalPDA as string);
-        setForVote(proposal.votesFor.toNumber()+1);
+        // setForVote(proposal.votesFor.toNumber()+1);
+        setForVote(proposal.votesFor.toNumber());
         setAgainstVote(proposal.votesAgainst.toNumber());
         setAbstainVote(proposal.votesAbstain.toNumber());
         setProposal(proposal);
@@ -98,11 +99,12 @@ const Proposals = () => {
     // setBtnClickedWithoutConnect(false);
   }
   return (
-    <div className="relative">
+    <div className="relative bg-gradient-to-b from-black via-gray-900 to-black bg-opacity-95">
       {/* {publicKey || walletAddress ? ( */}
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black bg-opacity-95 text-white animate-fadeIn">
+        {/* <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black bg-opacity-95 text-white animate-fadeIn"> */}
+        <div className="min-h-screen  text-white animate-fadeIn">
           <div className="relative w-full max-w-4xl mx-auto p-4 bg-gradient-to-br from-gray-800 to-black border border-indigo-800 rounded-lg shadow-lg shadow-indigo-700 transform transition duration-500 hover:shadow-indigo-800">
             {proposal ? (
               <>
@@ -140,8 +142,13 @@ const Proposals = () => {
                     </div>
                   </div>
 
-                  <Voting proposalPDA={new PublicKey(proposalPDA as string)} voted={hasVoted} onVote={refreshProposals} 
-                  setBtnClickedWithoutConnect={setBtnClickedWithoutConnect} setVoteSuccess={setVoteSuccess}/>
+                  <Voting
+                    proposalPDA={new PublicKey(proposalPDA as string)}
+                    voted={hasVoted}
+                    onVote={refreshProposals}
+                    setBtnClickedWithoutConnect={setBtnClickedWithoutConnect}
+                    setVoteSuccess={setVoteSuccess}
+                  />
 
                   {hasVoted && <p className="mt-6 text-red-500 font-semibold animate-bounce">You Have Voted</p>}
                 </div>
@@ -164,7 +171,7 @@ const Proposals = () => {
       // } */}
 
       {/* {!publicKey && btnClickedWithoutConnect && showConnectModal && ( */}
-      {!publicKey && btnClickedWithoutConnect  && (
+      {!publicKey && btnClickedWithoutConnect && (
         <div className="w-screen h-screen absolute top-0 backdrop-blur-md flex justify-center items-center">
           <div className="flex items-center bg-[#121212] justify-center border w-80 h-40 border-red-600">
             <div className="border hover:border-slate-900 rounded">
@@ -182,7 +189,9 @@ const Proposals = () => {
                 <WalletMultiButton />
               )}
             </div>
-            <button className="bg-white text-black p-1" onClick={()=>setBtnClickedWithoutConnect(false)}>Close</button>
+            <button className="bg-white text-black p-1" onClick={() => setBtnClickedWithoutConnect(false)}>
+              Close
+            </button>
           </div>
         </div>
       )}
