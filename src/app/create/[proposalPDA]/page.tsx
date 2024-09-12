@@ -36,6 +36,7 @@ const Proposals = () => {
   const [forVote,setForVote]=useState(0);
   const [againstVote,setAgainstVote]=useState(0);
   const [abstainVote,setAbstainVote]=useState(0);
+  const x=10;
 
   if (iframe && walletAddress) {
     const pubKey = new PublicKey(walletAddress);
@@ -56,8 +57,7 @@ const Proposals = () => {
         if (!publicKey) return;
         
         const voters = await program.account.voter.all();
-        console.log('voters');
-        console.log(voters);
+        console.log("voters in fetchProposals fn : ",voters);
         const userHasVoted = voters.some(
           (voter) => voter.account.user.equals(publicKey) && voter.account.proposal.equals(new PublicKey(proposalPDA as string))
         );
@@ -83,6 +83,7 @@ const Proposals = () => {
       setAbstainVote(proposal.votesAbstain.toNumber());
 
       const voters = await program.account.voter.all();
+      console.log("voters in refereshProposals fn : ",voters);
       const userHasVoted = voters.some((voter) => voter.account.user.equals(publicKey) && voter.account.proposal.equals(new PublicKey(proposalPDA as string)));
       setHasVoted(userHasVoted);
     } catch (error) {
@@ -146,6 +147,10 @@ const Proposals = () => {
                     proposalPDA={new PublicKey(proposalPDA as string)}
                     voted={hasVoted}
                     onVote={refreshProposals}
+                    setHasVoted={setHasVoted}
+                    setForVote={setForVote}
+                    setAgainstVote={setAgainstVote}
+                    setAbstainVote={setAbstainVote}
                     setBtnClickedWithoutConnect={setBtnClickedWithoutConnect}
                     setVoteSuccess={setVoteSuccess}
                   />

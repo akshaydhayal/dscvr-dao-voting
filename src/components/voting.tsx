@@ -11,7 +11,21 @@ if (typeof window !== 'undefined') {
     window.Buffer = Buffer;
 }
 
-const Voting: React.FC<{ proposalPDA: web3.PublicKey; voted: boolean; onVote: () => void }> = ({ proposalPDA, voted, onVote, setBtnClickedWithoutConnect,setVoteSuccess }) => {
+const Voting: React.FC<{ proposalPDA: web3.PublicKey; voted: boolean; onVote: () => void }> = ({
+  proposalPDA,
+  voted,
+  onVote,
+  setHasVoted,
+  setForVote,
+  setAgainstVote,
+  setAbstainVote,
+  voters,
+  setVoters,
+  setBtnClickedWithoutConnect,
+  setVoteSuccess,
+}) => {
+  console.log("voters in Voting Component : ", voters);
+
   const { connection } = useConnection();
   let { publicKey, sendTransaction } = useWallet();
   const [loading, setLoading] = useState(false);
@@ -60,8 +74,11 @@ const Voting: React.FC<{ proposalPDA: web3.PublicKey; voted: boolean; onVote: ()
       const account = program.account.proposal.fetch(proposalPDA);
       console.log(account);
 
-      onVote();
-      setVoteSuccess(true);
+      voteOption=='For'?setForVote((old) => old + 1):
+      (voteOption=='Against'?setAgainstVote(old=>old+1):setAbstainVote(old=>old+1));
+      setHasVoted(true);
+      // onVote();
+      // setVoteSuccess(true);
     } catch (error) {
       console.error("Error voting:", error);
     } finally {
@@ -101,7 +118,8 @@ const Voting: React.FC<{ proposalPDA: web3.PublicKey; voted: boolean; onVote: ()
           >
             Vote Against
           </Button>
-          <Button className='bg-blue-500 hover:bg-blue-400'
+          <Button
+            className="bg-blue-500 hover:bg-blue-400"
             variant="outline"
             onClick={() => {
               vote("Abstain");
