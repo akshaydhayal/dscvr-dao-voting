@@ -5,6 +5,7 @@ import "./globals.css";
 import AppWalletProvider from "./components/AppWalletProvider";
 import { CanvasWalletProvider } from "./components/CanvasWalletProvider";
 import Container from "./components/container";
+import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 const syne = Syne({ subsets: ["latin"] });
@@ -32,13 +33,19 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en" >
-      <body className=''>
+    <html lang="en">
+      <Head>
+        <meta name="dscvr:canvas:version" content="vNext" />
+        <meta name="og:image" content="https://my-canvas.com/preview-image.png" />
+      </Head>
+      <head>
+        <meta name="dscvr:canvas:version" content="vNext" />
+        <meta name="og:image" content="https://my-canvas.com/preview-image.png" />
+      </head>
+      <body className="">
         <AppWalletProvider>
           <CanvasWalletProvider>
-            <Container>
-              {children}
-            </Container>
+            <Container>{children}</Container>
           </CanvasWalletProvider>
         </AppWalletProvider>
       </body>
