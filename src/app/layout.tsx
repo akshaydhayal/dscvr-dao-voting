@@ -6,6 +6,9 @@ import AppWalletProvider from "./components/AppWalletProvider";
 import { CanvasWalletProvider } from "./components/CanvasWalletProvider";
 import Container from "./components/container";
 import Head from "next/head";
+import { useCanvasClient } from "@/lib/useCanvasClient";
+import { useResizeObserver } from "@/lib/useResizeObserver";
+import { registerCanvasWallet } from "@dscvr-one/canvas-wallet-adapter";
 
 const inter = Inter({ subsets: ["latin"] });
 const syne = Syne({ subsets: ["latin"] });
@@ -31,7 +34,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
+  const { client, user, content, isReady } = useCanvasClient();
+  useResizeObserver(client);
+  if (client) {
+    registerCanvasWallet(client);
+  }
   return (
     <html lang="en">
       <Head>
@@ -42,7 +49,7 @@ export default function RootLayout({
         <meta name="dscvr:canvas:version" content="vNext" />
         <meta name="og:image" content="https://my-canvas.com/preview-image.png" />
       </head>
-      <body className="">
+      <body className="" style={{ height: "700px" }}>
         <AppWalletProvider>
           <CanvasWalletProvider>
             <Container>{children}</Container>
