@@ -57,7 +57,7 @@ export default function RootLayout({
         <meta name="dscvr:canvas:version" content="vNext" />
         <meta name="og:image" content="https://my-canvas.com/preview-image.png" />
       </head>
-      <body className="" style={{ height: "700px" }}>
+      <body className="" style={{ height: "600px" }}>
         <div>
 
         <ConnectionProvider endpoint={endpoint}>

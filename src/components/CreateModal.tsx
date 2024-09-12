@@ -3,7 +3,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { program, deriveProposalPDA } from "./anchor/setup";
 import { web3, BN } from "@coral-xyz/anchor";
 import { Buffer } from "buffer";
-import { PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
+import { clusterApiUrl, Connection, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 // import useCanvasWallet from "@/app/components/CanvasWalletProvider";
 import { Proposal } from "@/app/page";
 
@@ -19,7 +19,9 @@ interface CreateProposalModalProps {
 
 const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClose, setProposall }) => {
   const { publicKey: walletPublicKey, sendTransaction,signTransaction } = useWallet();
-  const { connection } = useConnection();
+  // const { connection } = useConnection();
+  const connection=new Connection(clusterApiUrl("devnet"),"confirmed");
+  
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [point, setPoint] = useState<number | "">("");
