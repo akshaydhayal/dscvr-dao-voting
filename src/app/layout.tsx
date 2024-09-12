@@ -10,6 +10,11 @@ import Head from "next/head";
 import { useCanvasClient } from "@/lib/useCanvasClient";
 import { useResizeObserver } from "@/lib/useResizeObserver";
 import { registerCanvasWallet } from "@dscvr-one/canvas-wallet-adapter";
+import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { clusterApiUrl } from "@solana/web3.js";
+import Navbar from "@/components/Navbar";
+import "@solana/wallet-adapter-react-ui/styles.css";
 
 const inter = Inter({ subsets: ["latin"] });
 const syne = Syne({ subsets: ["latin"] });
@@ -35,6 +40,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
+  const endpoint = clusterApiUrl("devnet");
   const { client, user, content, isReady } = useCanvasClient();
   useResizeObserver(client);
   if (client) {
@@ -51,11 +58,23 @@ export default function RootLayout({
         <meta name="og:image" content="https://my-canvas.com/preview-image.png" />
       </head>
       <body className="" style={{ height: "700px" }}>
-        <AppWalletProvider>
+        <div>
+
+        <ConnectionProvider endpoint={endpoint}>
+          {/* <WalletProvider wallets={[phantomWallet]} autoConnect> */}
+          <WalletProvider wallets={[]} autoConnect>
+            <WalletModalProvider>
+              <Navbar />
+              {children}
+            </WalletModalProvider>
+          </WalletProvider>
+        </ConnectionProvider>
+        </div>
+        {/* <AppWalletProvider>
           <CanvasWalletProvider>
             <Container>{children}</Container>
           </CanvasWalletProvider>
-        </AppWalletProvider>
+        </AppWalletProvider> */}
       </body>
     </html>
   );
