@@ -4,13 +4,14 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { Buffer } from "buffer";
 import { PublicKey } from "@solana/web3.js";
 import { program } from "@/components/anchor/setup";
-import useCanvasWallet from "@/app/components/CanvasWalletProvider";
+// import useCanvasWallet from "@/app/components/CanvasWalletProvider";
 import Voting from "@/components/voting";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/Button";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { CanvasClient } from "@dscvr-one/canvas-client-sdk";
+import { useCanvasClient } from "@/lib/useCanvasClient";
 
 if (typeof window !== "undefined") {
   window.Buffer = Buffer;
@@ -31,24 +32,26 @@ const Proposals = () => {
   const [proposal, setProposal] = useState<ProposalType>();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasClientRef = useRef<CanvasClient | undefined>();
-  const { connectWallet, walletAddress, iframe } = useCanvasWallet();
+  // const { connectWallet, walletAddress, iframe } = useCanvasWallet();
+  // useCanvasClient().client.;
   const [voteSuccess,setVoteSuccess]=useState(false);
   const [forVote,setForVote]=useState(0);
   const [againstVote,setAgainstVote]=useState(0);
   const [abstainVote,setAbstainVote]=useState(0);
   const x=10;
 
-  if (iframe && walletAddress) {
-    const pubKey = new PublicKey(walletAddress);
-    publicKey = pubKey;
-  }
+  console.log("public key: ",publicKey);
+  // const walletDetails=useWallet();
+  // if (iframe && walletAddress) {
+  //   const pubKey = new PublicKey(walletAddress);
+  //   publicKey = pubKey;
+  // }
 
   console.log("for votes : ",forVote);
   useEffect(() => {
     const fetchProposal = async () => {
       try {
         const proposal = await program.account.proposal.fetch(proposalPDA as string);
-        // setForVote(proposal.votesFor.toNumber()+1);
         setForVote(proposal.votesFor.toNumber());
         setAgainstVote(proposal.votesAgainst.toNumber());
         setAbstainVote(proposal.votesAbstain.toNumber());
@@ -103,7 +106,7 @@ const Proposals = () => {
     <div className="relative bg-gradient-to-b from-black via-gray-900 to-black bg-opacity-95">
       {/* {publicKey || walletAddress ? ( */}
       <>
-        <Navbar />
+        {/* <Navbar /> */}
         {/* <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black bg-opacity-95 text-white animate-fadeIn"> */}
         <div className="min-h-screen  text-white animate-fadeIn">
           <div className="relative w-full max-w-4xl mx-auto p-4 bg-gradient-to-br from-gray-800 to-black border border-indigo-800 rounded-lg shadow-lg shadow-indigo-700 transform transition duration-500 hover:shadow-indigo-800">
@@ -177,10 +180,12 @@ const Proposals = () => {
       {/* {!publicKey && btnClickedWithoutConnect && showConnectModal && ( */}
       {!publicKey && btnClickedWithoutConnect && (
         <div className="w-screen h-screen absolute top-0 backdrop-blur-md flex justify-center items-center">
-          <div className="flex items-center bg-[#121212] justify-center border w-80 h-40 border-red-600">
-            <div className="border hover:border-slate-900 rounded">
+          <div className="flex gap-2 items-center bg-[#121212] justify-center border w-80 h-24 border-slate-600">
+            <div className=" hover:border-slate-900 rounded">
+              <p className="text-lg text-slate-300 p-1 px-2">Connect Wallet to Vote</p>
               {/* {iframe ? <Button onClick={connectWallet}>Connect Wallet</Button> : <WalletMultiButton />} */}
-              {iframe ? (
+              
+              {/* {iframe ? (
                 <Button
                   onClick={() => {
                     connectWallet();
@@ -191,9 +196,9 @@ const Proposals = () => {
                 </Button>
               ) : (
                 <WalletMultiButton />
-              )}
+              )} */}
             </div>
-            <button className="bg-white text-black p-1" onClick={() => setBtnClickedWithoutConnect(false)}>
+            <button className="bg-white text-black p-1 px-4" onClick={() => setBtnClickedWithoutConnect(false)}>
               Close
             </button>
           </div>

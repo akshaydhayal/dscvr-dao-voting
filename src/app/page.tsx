@@ -2,6 +2,7 @@
 
 import CreateProposalModal from "@/components/CreateModal";
 import Navbar from "@/components/Navbar";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -23,6 +24,7 @@ const DarkRetroThemeHomepage= () => {
   const [proposalsLoading,setProposalsLoading]=useState(true);
   console.log("propo loading : ",proposalsLoading);
   const router=useRouter();
+  const {publicKey}=useWallet();
 
   useEffect(() => {
     async function getProposals() {
@@ -42,7 +44,13 @@ const DarkRetroThemeHomepage= () => {
   const daoDescription =
     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus odio non perferendis vitae et dolorem ipsam inventore distinctio atque eligendi.";
 
-  const openModal = () => setIsModalOpen(true);
+  const openModal = () => {
+    if(!publicKey){
+      alert("Connect Wallet first");
+      return;
+    }
+    setIsModalOpen(true)
+  };
   const closeModal = () => setIsModalOpen(false);
 
   return (

@@ -4,7 +4,7 @@ import { program, deriveProposalPDA } from "./anchor/setup";
 import { web3, BN } from "@coral-xyz/anchor";
 import { Buffer } from "buffer";
 import { PublicKey } from "@solana/web3.js";
-import useCanvasWallet from "@/app/components/CanvasWalletProvider";
+// import useCanvasWallet from "@/app/components/CanvasWalletProvider";
 import { Proposal } from "@/app/page";
 
 if (typeof window !== "undefined") {
@@ -25,14 +25,15 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
   const [point, setPoint] = useState<number | "">("");
   const [proposal, setProposal] = useState<any>(null);
   const [failed, setFailed] = useState<any>(null);
-  const { connectWallet, walletAddress, signTransaction } = useCanvasWallet();
+
+  // const { connectWallet, walletAddress, signTransaction } = useCanvasWallet();
   const [proposalCreateLoading,setProposalCreateLoading]=useState(false);
 
   let publicKey = walletPublicKey;
 
-  if (walletAddress) {
-    publicKey = new PublicKey(walletAddress);
-  }
+  // if (walletAddress) {
+  //   publicKey = new PublicKey(walletAddress);
+  // }
 
   const proposalId = new BN(Date.now());
 
@@ -55,14 +56,17 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       console.log("Transaction created:", trx);
 
       console.log("Sending transaction...");
-      let trxSign;
-      if (walletAddress) {
-        trxSign = await signTransaction(trx);
-      } else {
-        trxSign = await sendTransaction(trx, connection, { signers: [] });
-        const confirmation = await connection.confirmTransaction(trxSign, "confirmed");
-        console.log("Transaction confirmed:", confirmation);
-      }
+      let trxSign=await sendTransaction(trx, connection, { signers: [] });
+      const confirmation = await connection.confirmTransaction(trxSign, "confirmed");
+      console.log("Transaction confirmed:", confirmation);
+      // let trxSign;
+      // if (walletAddress) {
+      //   trxSign = await signTransaction(trx);
+      // } else {
+      //   trxSign = await sendTransaction(trx, connection, { signers: [] });
+      //   const confirmation = await connection.confirmTransaction(trxSign, "confirmed");
+      //   console.log("Transaction confirmed:", confirmation);
+      // }
 
       console.log(`View on explorer: https://solana.fm/tx/${trxSign}?cluster=devnet-alpha`);
 
