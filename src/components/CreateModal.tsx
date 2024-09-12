@@ -59,6 +59,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       trx.feePayer=publicKey;
       trx.recentBlockhash=(await connection.getLatestBlockhash("confirmed")).blockhash;
       trx.lastValidBlockHeight=(await connection.getLatestBlockhash("confirmed")).lastValidBlockHeight;
+      //@ts-ignore
       const signed=await signTransaction(trx);
       console.log(signed);
       let trxSign=await sendTransaction(trx, connection, { });
