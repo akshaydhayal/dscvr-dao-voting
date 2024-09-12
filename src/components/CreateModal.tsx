@@ -77,7 +77,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       //   console.log("Transaction confirmed:", confirmation);
       // }
 
-      console.log(`View on explorer: https://solana.fm/tx/${trxSign}?cluster=devnet-alpha`);
+      // console.log(`View on explorer: https://solana.fm/tx/${trxSign}?cluster=devnet-alpha`);
 
       // Save proposal data
       const proposalData = {
