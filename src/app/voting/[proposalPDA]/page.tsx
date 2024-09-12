@@ -101,7 +101,7 @@ return (
                                             <span className="text-[16px] font-bold leading-[20px] text-center">{proposal.votesAbstain.toNumber()}</span>
                                         </div>
                                     </div>
-
+                                    {/* @ts-ignore  */}
                                     <Voting proposalPDA={new PublicKey(proposalPDA as string)} voted={hasVoted} onVote={refreshProposals} />
                                     {hasVoted ? <p className='text-[16px] font-bold text-center text-red-600'>You Have Voted</p> : ""}
                                 </div>

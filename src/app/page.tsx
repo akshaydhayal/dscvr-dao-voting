@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-interface Proposal {
+export interface Proposal {
   name: string;
   description: string;
 }
@@ -16,7 +16,8 @@ interface HomepageProps {
   proposals: Proposal[];
 }
 
-const DarkRetroThemeHomepage: React.FC<HomepageProps> = () => {
+// const DarkRetroThemeHomepage: React.FC<HomepageProps> = () => {
+const DarkRetroThemeHomepage= () => {
   const [proposals, setProposal] = useState<Proposal[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [proposalsLoading,setProposalsLoading]=useState(true);
@@ -86,7 +87,8 @@ const DarkRetroThemeHomepage: React.FC<HomepageProps> = () => {
           proposals.map((proposal, index) => (
           <div className="bg-gradient-to-b from-gray-700 to-gray-900 border border-slate-700 p-4 rounded-lg shadow-lg 
           cursor-pointer transform transition duration-500 hover:scale-[1.03] hover:shadow-xl"
-            onClick={() => router.push(`/create/${proposal.address}`)}
+          //@ts-ignore  
+          onClick={() => router.push(`/create/${proposal.address}`)}
             key={index}
           >
             <h3 className="text-2xl text-purple-400 font-semibold font-serif">{proposal.name}</h3>

@@ -3,7 +3,7 @@ import { deriveVoterPDA, program } from './anchor/setup';
 import { web3 } from '@coral-xyz/anchor';
 import { Buffer } from 'buffer';
 import { Button } from './ui/Button';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import useCanvasWallet from '@/app/components/CanvasWalletProvider';
 import { PublicKey } from '@solana/web3.js';
 
@@ -11,21 +11,16 @@ if (typeof window !== 'undefined') {
     window.Buffer = Buffer;
 }
 
-const Voting: React.FC<{ proposalPDA: web3.PublicKey; voted: boolean; onVote: () => void }> = ({
-  proposalPDA,
-  voted,
-  onVote,
-  setHasVoted,
-  setForVote,
-  setAgainstVote,
-  setAbstainVote,
-  voters,
-  setVoters,
-  setBtnClickedWithoutConnect,
-  setVoteSuccess,
-}) => {
-  console.log("voters in Voting Component : ", voters);
-
+const Voting: React.FC<{
+  proposalPDA: web3.PublicKey;
+  setHasVoted: Dispatch<SetStateAction<boolean>>;
+  setForVote: Dispatch<SetStateAction<number>>;
+  setAgainstVote: Dispatch<SetStateAction<number>>;
+  setAbstainVote: Dispatch<SetStateAction<number>>;
+  setBtnClickedWithoutConnect: Dispatch<SetStateAction<boolean>>;
+  voted: boolean;
+  onVote: () => void;
+}> = ({ proposalPDA, voted, setHasVoted, setForVote, setAgainstVote, setAbstainVote, setBtnClickedWithoutConnect }) => {
   const { connection } = useConnection();
   let { publicKey, sendTransaction } = useWallet();
   const [loading, setLoading] = useState(false);
@@ -74,8 +69,7 @@ const Voting: React.FC<{ proposalPDA: web3.PublicKey; voted: boolean; onVote: ()
       const account = program.account.proposal.fetch(proposalPDA);
       console.log(account);
 
-      voteOption=='For'?setForVote((old) => old + 1):
-      (voteOption=='Against'?setAgainstVote(old=>old+1):setAbstainVote(old=>old+1));
+      voteOption == "For" ? setForVote((old) => old + 1) : voteOption == "Against" ? setAgainstVote((old) => old + 1) : setAbstainVote((old) => old + 1);
       setHasVoted(true);
       // onVote();
       // setVoteSuccess(true);

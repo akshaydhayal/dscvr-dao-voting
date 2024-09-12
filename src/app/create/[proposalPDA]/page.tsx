@@ -152,7 +152,6 @@ const Proposals = () => {
                     setAgainstVote={setAgainstVote}
                     setAbstainVote={setAbstainVote}
                     setBtnClickedWithoutConnect={setBtnClickedWithoutConnect}
-                    setVoteSuccess={setVoteSuccess}
                   />
 
                   {hasVoted && <p className="mt-6 text-red-500 font-semibold animate-bounce">You Have Voted</p>}

@@ -72,13 +72,12 @@ const Proposals: React.FC = ({ }) => {
                   </div>
                 </div>
 
+                {/* @ts-ignore */}
                 <Voting
                   proposalPDA={proposal.publicKey}
                   voted={hasVoted(proposal.publicKey)}
                   onVote={refreshProposals}
-                  a={a}
-                  voters={voters}
-                  setVoters={setVoters}
+                  
                 />
               </div>
             </div>

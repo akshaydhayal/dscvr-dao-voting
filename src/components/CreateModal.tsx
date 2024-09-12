@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { program, deriveProposalPDA } from "./anchor/setup";
 import { web3, BN } from "@coral-xyz/anchor";
 import { Buffer } from "buffer";
 import { PublicKey } from "@solana/web3.js";
 import useCanvasWallet from "@/app/components/CanvasWalletProvider";
+import { Proposal } from "@/app/page";
 
 if (typeof window !== "undefined") {
   window.Buffer = Buffer;
@@ -13,6 +14,7 @@ if (typeof window !== "undefined") {
 interface CreateProposalModalProps {
   isOpen: boolean;
   onClose: () => void;
+  setProposall:Dispatch<SetStateAction<Proposal[]>>;
 }
 
 const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClose, setProposall }) => {
@@ -41,8 +43,8 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       const { proposalPDA } = await deriveProposalPDA(publicKey, proposalId);
       setProposal(proposalPDA.toString());
       console.log("Creating transaction...");
-      const trx = await program.methods
-        .createProposal(title, description, proposalId, point)
+      //@ts-ignore
+      const trx = await program.methods.createProposal(title, description, proposalId, point)
         .accounts({
           proposal: proposalPDA,
           user: publicKey,
@@ -130,7 +132,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
               type="number"
               placeholder="Enter points"
               value={point}
-              onChange={(e) => setPoint(e.target.value)}
+              onChange={(e) => setPoint(Number(e.target.value))}
               className="w-full border text-slate-800 placeholder:text-slate-500 placeholder:text-sm border-gray-300 p-2 rounded"
               required
             />
@@ -142,6 +144,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
                 className="px-4 py-2 mt-4 bg-blue-600 hover:bg-blue-500 text-white font-medium  rounded-md"
                 onClick={(e) => {
                   setProposalCreateLoading(true);
+                  //@ts-ignore
                   handleSubmit(e);
                 }}
               >
