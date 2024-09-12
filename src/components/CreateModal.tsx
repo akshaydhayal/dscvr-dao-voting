@@ -3,7 +3,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { program, deriveProposalPDA } from "./anchor/setup";
 import { web3, BN } from "@coral-xyz/anchor";
 import { Buffer } from "buffer";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 // import useCanvasWallet from "@/app/components/CanvasWalletProvider";
 import { Proposal } from "@/app/page";
 
@@ -18,7 +18,7 @@ interface CreateProposalModalProps {
 }
 
 const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClose, setProposall }) => {
-  const { publicKey: walletPublicKey, sendTransaction } = useWallet();
+  const { publicKey: walletPublicKey, sendTransaction,signTransaction } = useWallet();
   const { connection } = useConnection();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -56,11 +56,17 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       console.log("Transaction created:", trx);
 
       console.log("Sending transaction...");
+      trx.feePayer=publicKey;
+      trx.recentBlockhash=(await connection.getLatestBlockhash("confirmed")).blockhash;
+      trx.lastValidBlockHeight=(await connection.getLatestBlockhash("confirmed")).lastValidBlockHeight;
+      // const signed=await signTransaction(trx);
+      // console.log(signed);
       let trxSign=await sendTransaction(trx, connection, { });
+      console.log("Transaction confirmed:", trxSign);
       
       // let trxSign=await sendTransaction(trx, connection, { signers: [] });
-      const confirmation = await connection.confirmTransaction(trxSign, "confirmed");
-      console.log("Transaction confirmed:", confirmation);
+      // const confirmation = await connection.confirmTransaction(trxSign, "confirmed");
+      // console.log("Transaction confirmed:", confirmation);
       // let trxSign;
       // if (walletAddress) {
       //   trxSign = await signTransaction(trx);
