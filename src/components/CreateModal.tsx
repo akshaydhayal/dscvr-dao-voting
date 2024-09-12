@@ -51,17 +51,24 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
           user: publicKey,
           systemProgram: web3.SystemProgram.programId,
         })
-        .transaction();
+        .rpc();
+        // .transaction();
 
       console.log("Transaction created:", trx);
 
-      console.log("Sending transaction...");
-      trx.feePayer=publicKey;
-      trx.recentBlockhash=(await connection.getLatestBlockhash("confirmed")).blockhash;
-      trx.lastValidBlockHeight=(await connection.getLatestBlockhash("confirmed")).lastValidBlockHeight;
-      //@ts-ignore
-      const signed=await signTransaction(trx);
-      console.log(signed);
+      // console.log("Sending transaction...");
+      // trx.feePayer=publicKey;
+      // trx.recentBlockhash=(await connection.getLatestBlockhash("confirmed")).blockhash;
+      // trx.lastValidBlockHeight=(await connection.getLatestBlockhash("confirmed")).lastValidBlockHeight;
+      // //@ts-ignore
+      // const signed=await signTransaction(trx);
+      // console.log(signed);
+
+
+
+
+
+
       // let trxSign=await sendTransaction(trx, connection, { });
       // console.log("Transaction confirmed:", trxSign);
       
