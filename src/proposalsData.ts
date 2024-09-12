@@ -73,5 +73,10 @@
     "name": "po",
     "description": "po",
     "address": "5Y2T8KBMFy6Vw2k4BNDSumf2YPGScx8yEjaETWCzoxYF"
+  },
+  {
+    "name": "lo",
+    "description": "lo",
+    "address": "GMfrCaXsEBXqCS2FxsgfYHMPZ1Syv8tpA3kk7oxEk13K"
   }
 ]

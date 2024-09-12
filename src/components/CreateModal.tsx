@@ -56,7 +56,9 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       console.log("Transaction created:", trx);
 
       console.log("Sending transaction...");
-      let trxSign=await sendTransaction(trx, connection, { signers: [] });
+      let trxSign=await sendTransaction(trx, connection, { });
+      
+      // let trxSign=await sendTransaction(trx, connection, { signers: [] });
       const confirmation = await connection.confirmTransaction(trxSign, "confirmed");
       console.log("Transaction confirmed:", confirmation);
       // let trxSign;
