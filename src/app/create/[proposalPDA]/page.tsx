@@ -100,17 +100,19 @@ const Proposals = () => {
       const nftTx=await createVoteAsset(wallet, setNftMintStatus);
       console.log("nftTx : ",nftTx);
       if(!nftTx) return;
+      const putReqBody = {
+        address: proposalPDA,
+        votes: voteCount,
+        voterAddress: publicKey.toBase58(),
+      };
+      console.log("putReqBody : ",putReqBody);
       // You can now handle the vote logic by making a POST request to update the votes in your backend
       const response=await fetch("/api/saveproposal", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          address: proposalPDA,
-          votes:voteCount,
-          voterAddress:publicKey.toBase58()
-        }),
+        body: JSON.stringify(putReqBody),
       });
       const data=await response.json(); 
       // console.log("response : ",response);

@@ -19,9 +19,11 @@
     "name": "i",
     "description": "i",
     "address": "5YXQY3kxYwRoRgNiosdvW55x71NDeVsAxnZDkcVSZ6HV",
-    "voters": [],
+    "voters": [
+      "9fGRk...something"
+    ],
     "votes": {
-      "for": 0,
+      "for": 1,
       "against": 0,
       "abstain": 0
     }
