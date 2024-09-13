@@ -60,13 +60,7 @@ const Voting: React.FC<{
           .instruction()
       );
 
-      // let trxSignature;
-      // if (walletAddress) {
-      //   trxSignature = await signTransaction(trx);
-      // } else {
-      //   trxSignature = await sendTransaction(trx, connection, { signers: [] });
-      //   console.log(`Vote transaction sent: ${trxSignature}`);
-      // }
+      
       let trxSignature= await sendTransaction(trx, connection, { signers: [] });
       console.log(`Vote transaction sent: ${trxSignature}`);
 
@@ -75,8 +69,6 @@ const Voting: React.FC<{
 
       voteOption == "For" ? setForVote((old) => old + 1) : voteOption == "Against" ? setAgainstVote((old) => old + 1) : setAbstainVote((old) => old + 1);
       setHasVoted(true);
-      // onVote();
-      // setVoteSuccess(true);
     } catch (error) {
       console.error("Error voting:", error);
     } finally {
@@ -92,9 +84,7 @@ const Voting: React.FC<{
           <div className="loader border-b-4 border-blue-400 border-solid rounded-full w-7 h-7 animate-spin"></div>
         </div>
       ) : (
-        // <Button className='bg-teal-200 p-4 px-8 text-xl font-semibold text-black' onClick={() => vote("For")} disabled={true} variant="primary">
-        //   Voting...
-        // </Button>
+      
         <>
           <Button
             onClick={() => {

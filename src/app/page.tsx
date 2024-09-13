@@ -94,7 +94,7 @@ const DarkRetroThemeHomepage= () => {
             <h2 className="text-2xl font-bold text-slate-300 font-mono">Loading Proposals</h2>
             <div className="loader border-b-4 border-blue-500 border-solid rounded-full w-8 h-8 animate-spin"></div>
           </div>:(
-          proposals.map((proposal, index) => (
+          proposals.length>0 && proposals.map((proposal, index) => (
           <div className="bg-gradient-to-b from-gray-700 to-gray-900 border border-slate-700 p-4 rounded-lg shadow-lg 
           cursor-pointer transform transition duration-500 hover:scale-[1.03] hover:shadow-xl"
           //@ts-ignore  

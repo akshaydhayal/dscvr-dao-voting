@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
       const proposals: Proposal[] = JSON.parse(data);
       console.log("pp ; ",proposals);
-      proposals.push(proposal);
+      proposals.push({...proposal,voters:[],votes:{for:0,against:0,abstain:0}});
 
       // Write the updated data back to data.ts
       const updatedData = JSON.stringify(proposals, null, 2);
@@ -71,4 +71,105 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Internal Server Error" },{status:500});
     }
   
+}
+
+
+
+interface Proposal {
+  address: string;
+  title: string;
+  description: string;
+  votes: {
+    for: number;
+    against: number;
+    abstain: number;
+  };
+}
+
+// PUT: Update vote count for a specific proposal
+// export async function PUT(req: NextRequest) {
+//   try {
+//     const dataFilePath = path.join(process.cwd(), "src/proposalsData.ts");
+
+//     // Parse the incoming request body
+//     const { address, votes } = await req.json();
+//     console.log(address,votes);
+
+//     // Read the current proposals data from the file
+//     let data = await readFile(dataFilePath, "utf-8");
+//     console.log("current propsals: ",data);
+//     const proposals: Proposal[] = JSON.parse(data);
+
+//     // Find the proposal by ID and update the vote count
+//     const proposalIndex = proposals.findIndex((p) => p.address === address);
+//     if (proposalIndex === -1) {
+//       return NextResponse.json({ message: "Proposal not found" }, { status: 404 });
+//     }
+
+//     proposals[proposalIndex].votes = votes;
+
+//     // Write the updated proposals data back to the file
+//     const updatedData = JSON.stringify(proposals, null, 2);
+//     await writeFile(dataFilePath, updatedData, "utf8");
+
+//     return NextResponse.json({ message: "Votes updated successfully!" }, { status: 200 });
+//   } catch (error) {
+//     console.error("Error updating votes:", error);
+//     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+//   }
+// }
+
+
+
+
+
+
+// Define the Proposal interface
+interface Proposal {
+  address: string;
+  title: string;
+  description: string;
+  votes: {
+    for: number;
+    against: number;
+    abstain: number;
+  };
+  voters: string[]; // Array of addresses that have voted
+}
+
+// PUT: Update vote count and voter addresses for a specific proposal
+export async function PUT(req: NextRequest) {
+  try {
+    const dataFilePath = path.join(process.cwd(), "src/proposalsData.ts");
+
+    // Parse the incoming request body
+    const { address, votes, voterAddress } = await req.json(); // Expecting a voterAddress field
+
+    // Read the current proposals data from the file
+    let data = await readFile(dataFilePath, "utf8");
+    const proposals: Proposal[] = JSON.parse(data);
+
+    // Find the proposal by ID
+    const proposalIndex = proposals.findIndex((p) => p.address === address);
+    if (proposalIndex === -1) {
+      return NextResponse.json({ message: "Proposal not found" }, { status: 404 });
+    }
+
+    // Update the vote count
+    proposals[proposalIndex].votes = votes;
+
+    // Update the list of voters if the address hasn't already voted
+    if (!proposals[proposalIndex].voters.includes(voterAddress)) {
+      proposals[proposalIndex].voters.push(voterAddress);
+    }
+
+    // Write the updated proposals data back to the file
+    const updatedData = JSON.stringify(proposals, null, 2);
+    await writeFile(dataFilePath, updatedData, "utf8");
+
+    return NextResponse.json({ message: "Votes and voter updated successfully!" }, { status: 200 });
+  } catch (error) {
+    console.error("Error updating votes and voters:", error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+  }
 }
