@@ -144,10 +144,15 @@ export async function PUT(req: NextRequest) {
 
     // Parse the incoming request body
     const { address, votes, voterAddress } = await req.json(); // Expecting a voterAddress field
-
+    console.log("from put api");
+    console.log("datafilePath",dataFilePath);
+    console.log("voterAddress: ", voterAddress);
+    console.log("votes: ", votes);
+    console.log("address: ", address);
     // Read the current proposals data from the file
     let data = await readFile(dataFilePath, "utf8");
     const proposals: Proposal[] = JSON.parse(data);
+    console.log("proposas in api: ", proposals);
 
     // Find the proposal by ID
     const proposalIndex = proposals.findIndex((p) => p.address === address);
