@@ -18,7 +18,7 @@ interface Proposal extends Document {
 const ProposalSchema: Schema = new Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
-  address: { type: String, required: true, unique: true },
+  address: { type: String, required: true, unique: false },
   votes: {
     for: { type: Number, default: 0 },
     against: { type: Number, default: 0 },
