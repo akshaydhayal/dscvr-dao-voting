@@ -134,6 +134,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
                       awaitCommitment: "confirmed",
                       chainId: "solana:103",
                   });
+                console.log('results : ',results);
 
       //   trx.feePayer=publicKey;
       //   trx.recentBlockhash=(await connection.getLatestBlockhash("confirmed")).blockhash;
@@ -183,7 +184,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
         body: JSON.stringify(proposalData),
       });
 
-      if (response.ok) {
+      if (response) {
         console.log("Proposal saved successfully");
         setProposalCreateLoading(false);
         setProposall((old) => [...old, proposalData]);
