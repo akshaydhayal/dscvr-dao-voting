@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Proposal saved successfully!" }, { status: 200 });
   } catch (error) {
     console.error("Error saving proposal:", error);
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ message: "Internal Server Error",error:error }, { status: 500 });
   }
 }
 
