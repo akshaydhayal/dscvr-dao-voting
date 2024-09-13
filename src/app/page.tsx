@@ -42,8 +42,7 @@ const DarkRetroThemeHomepage= () => {
   }, []);
 
   const daoName = "Solana DAO";
-  const daoDescription =
-    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus odio non perferendis vitae et dolorem ipsam inventore distinctio atque eligendi.";
+  const daoDescription = "Empower Your Voice: Propose, Vote, and Earn Exclusive NFTs for Your Participation";
 
   const openModal = () => {
     if(!publicKey){
