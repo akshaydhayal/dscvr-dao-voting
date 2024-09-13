@@ -163,10 +163,6 @@ export async function PUT(req: NextRequest) {
     // Update the vote count
     proposals[proposalIndex].votes = votes;
 
-    // // Update the list of voters if the address hasn't already voted
-    // if (!proposals[proposalIndex].voters.includes(voterAddress)) {
-    //   proposals[proposalIndex].voters.push(voterAddress);
-    // }
 
     // Write the updated proposals data back to the file
     const updatedData = JSON.stringify(proposals, null, 2);
@@ -175,6 +171,6 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ message: "Votes and voter updated successfully!" }, { status: 200 });
   } catch (error) {
     console.error("Error updating votes and voters:", error);
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ message: "Internal Server Error",error:error }, { status: 500 });
   }
 }
