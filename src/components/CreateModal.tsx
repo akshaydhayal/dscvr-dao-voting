@@ -1,11 +1,16 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { program, deriveProposalPDA } from "./anchor/setup";
 import { web3, BN } from "@coral-xyz/anchor";
 import { Buffer } from "buffer";
-import { clusterApiUrl, Connection, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
+import { clusterApiUrl, Connection, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 // import useCanvasWallet from "@/app/components/CanvasWalletProvider";
 import { Proposal } from "@/app/page";
+import { useCanvasClient } from "@/lib/useCanvasClient";
+import { CanvasClient } from "@dscvr-one/canvas-client-sdk";
+import { registerCanvasWallet } from "@dscvr-one/canvas-wallet-adapter";
+import { encode } from "bs58";
+
 
 if (typeof window !== "undefined") {
   window.Buffer = Buffer;
@@ -18,10 +23,45 @@ interface CreateProposalModalProps {
 }
 
 const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClose, setProposall }) => {
-  const { publicKey: walletPublicKey, sendTransaction,signTransaction } = useWallet();
+  const { publicKey: walletPublicKey, sendTransaction, signTransaction } = useWallet();
   // const { connection } = useConnection();
-  const connection=new Connection(clusterApiUrl("devnet"),"confirmed");
-  
+  const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+
+
+  const [canvasClient, setCanvasClient] = useState<CanvasClient | null>(null);
+
+ useEffect(() => {
+        // const isIframe = () => {
+        //     try {
+        //         return window.self !== window.top;
+        //     } catch (e) {
+        //         return true;
+        //     }
+        // };
+
+        // setIframe(isIframe());
+
+        // if (isIframe()) {
+            const client = new CanvasClient();
+            registerCanvasWallet(client);
+            setCanvasClient(client);
+            console.log(client);
+            console.log("CanvasClient initialized");
+        // }
+    }, []);
+
+
+  console.log("demo");
+  // const canvasClient1 = useCanvasClient();
+  // console.log("client : ", canvasClient1.client);
+  // const [canvasClient, setCanvasClient] = useState<CanvasClient | null>(null);
+  // console.log("client2 : ", canvasClient);
+  // async function makeReady(){
+  //   await canvasClient?.ready();
+  //   console.log("client2 : ", canvasClient);
+  // }
+  // makeReady();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [point, setPoint] = useState<number | "">("");
@@ -29,7 +69,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
   const [failed, setFailed] = useState<any>(null);
 
   // const { connectWallet, walletAddress, signTransaction } = useCanvasWallet();
-  const [proposalCreateLoading,setProposalCreateLoading]=useState(false);
+  const [proposalCreateLoading, setProposalCreateLoading] = useState(false);
 
   let publicKey = walletPublicKey;
 
@@ -43,36 +83,76 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
     e.preventDefault();
     if (!publicKey) return;
     try {
+      const connection = new Connection(clusterApiUrl("devnet"));
+      // const walletSecret = [
+      //   12, 210, 152, 23, 3, 69, 14, 50, 194, 93, 159, 13, 6, 66, 248, 59, 238, 183, 241, 12, 201, 67, 59, 22, 127, 48, 105, 117, 50, 99, 79, 254, 9, 185, 177,
+      //   0, 10, 80, 91, 30, 246, 240, 177, 125, 7, 83, 128, 174, 38, 220, 71, 231, 43, 130, 253, 182, 16, 29, 233, 250, 246, 117, 221, 153,
+      // ];
+      // const keypair = Keypair.fromSecretKey(Uint8Array.from(walletSecret));
+      // const { proposalPDA } = await deriveProposalPDA(keypair.publicKey, proposalId);
       const { proposalPDA } = await deriveProposalPDA(publicKey, proposalId);
       setProposal(proposalPDA.toString());
       console.log("Creating transaction...");
+
+      // const str = "5k8z2CULieyqz6fnHUtimgLMYFsu1sYfw4HAPz9eVCdzu3cgJJgGSESABer7scFCWM8iHpdcAfJXXsKWegbvDVPM";
+      // const encoder = new TextEncoder();
+      // const uint8Array = encoder.encode(str);
+      // console.log("unint8 keypair : ",uint8Array);
+      // const keypair = Keypair.fromSecretKey(uint8Array);
+
       //@ts-ignore
       const trx = await program.methods.createProposal(title, description, proposalId, point)
         .accounts({
           proposal: proposalPDA,
+          // user: keypair.publicKey,
           user: publicKey,
           systemProgram: web3.SystemProgram.programId,
         })
+        // .signers([keypair])
         .transaction();
 
-      console.log("Transaction created:", trx);
-      console.log("Sending transaction...");
-      // trx.feePayer=publicKey;
-      // trx.recentBlockhash=(await connection.getLatestBlockhash("confirmed")).blockhash;
-      // trx.lastValidBlockHeight=(await connection.getLatestBlockhash("confirmed")).lastValidBlockHeight;
+      // console.log('client : ',canvasClient);
+      // const network = process.env.NEXT_PUBLIC_SOLANA_RPC || "https://api.devnet.solana.com/";
+      //             const connection = new Connection(network, 'confirmed');
+
+      //             // Fetch the latest blockhash
+                  const { blockhash } = await connection.getLatestBlockhash({ commitment: "confirmed" });
+                  trx.recentBlockhash = blockhash;
+                  trx.feePayer = publicKey;
+
+      //             // Serialize the transaction
+                  const serializedTx = trx.serialize({
+                      requireAllSignatures: false,
+                      verifySignatures: false,
+                  });
+
+                  const base58Tx = encode(serializedTx)
+
+      //             // Sign and send the transaction via canvasClient
+                  const results = await canvasClient?.signAndSendTransaction({
+                      unsignedTx: base58Tx,
+                      awaitCommitment: "confirmed",
+                      chainId: "solana:103",
+                  });
+
+      //   trx.feePayer=publicKey;
+      //   trx.recentBlockhash=(await connection.getLatestBlockhash("confirmed")).blockhash;
+      //   trx.lastValidBlockHeight=(await connection.getLatestBlockhash("confirmed")).lastValidBlockHeight;
+      // await signTransaction(trx);
+      // const confiemedTx=await sendAndConfirmTransaction(connection,trx,[keypair])
+      // console.log(confiemedTx);
+      // console.log("Transaction created:", trx);
+      // console.log("Sending transaction...");
+
       // @ts-ignore
       // const signed=await signTransaction(trx);
       // console.log(signed);
 
       // let trxSign=await sendTransaction(signed, connection,{signers:[]});
-      let trxSign=await sendTransaction(trx, connection,{signers:[]});
-      console.log("Transaction confirmed:", trxSign);
 
+      // let trxSign=await sendTransaction(trx, connection,{signers:[]});
+      // console.log("Transaction confirmed:", trxSign);
 
-
-
-
-      
       // let trxSign=await sendTransaction(trx, connection, { signers: [] });
       // const confirmation = await connection.confirmTransaction(trxSign, "confirmed");
       // console.log("Transaction confirmed:", confirmation);
@@ -88,8 +168,9 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       // console.log(`View on explorer: https://solana.fm/tx/${trxSign}?cluster=devnet-alpha`);
 
       // Save proposal data
+
       const proposalData = {
-        name:title,
+        name: title,
         description,
         address: proposalPDA.toString(),
       };
@@ -105,7 +186,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       if (response.ok) {
         console.log("Proposal saved successfully");
         setProposalCreateLoading(false);
-        setProposall(old=>[...old,proposalData]);
+        setProposall((old) => [...old, proposalData]);
         onClose(); // Close the modal after success
       } else {
         console.error("Failed to save proposal");
@@ -131,7 +212,8 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
               placeholder="Proposal Title (20 chars limit)"
               onChange={(e) => setTitle(e.target.value)}
               className="w-full text-slate-700 placeholder:text-slate-500 placeholder:text-sm border border-gray-300 p-2 rounded"
-              required maxLength={20}
+              required
+              maxLength={20}
             />
             <div className="text-right text-xs text-slate-200 mt-0">{title.length}/20 characters</div>
           </div>
@@ -144,7 +226,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
               className="w-full text-slate-800 placeholder:text-slate-500 placeholder:text-sm border border-gray-300 p-2 rounded"
               required
               maxLength={100}
-              />
+            />
             <div className="text-right text-xs text-slate-200 mt-0">{description.length}/100 characters</div>
           </div>
           <div className="">
