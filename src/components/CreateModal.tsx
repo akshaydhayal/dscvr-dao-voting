@@ -101,7 +101,8 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       // const keypair = Keypair.fromSecretKey(uint8Array);
 
       //@ts-ignore
-      const trx = await program.methods.createProposal(title, description, proposalId, point)
+      const trx = await program.methods
+        .createProposal(title, description, proposalId, point)
         .accounts({
           proposal: proposalPDA,
           // user: keypair.publicKey,
@@ -116,25 +117,31 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       //             const connection = new Connection(network, 'confirmed');
 
       //             // Fetch the latest blockhash
-                  const { blockhash } = await connection.getLatestBlockhash({ commitment: "confirmed" });
-                  trx.recentBlockhash = blockhash;
-                  trx.feePayer = publicKey;
+      const { blockhash } = await connection.getLatestBlockhash({ commitment: "confirmed" });
+      trx.recentBlockhash = blockhash;
+      trx.feePayer = publicKey;
 
       //             // Serialize the transaction
-                  const serializedTx = trx.serialize({
-                      requireAllSignatures: false,
-                      verifySignatures: false,
-                  });
+      const serializedTx = trx.serialize({
+        requireAllSignatures: false,
+        verifySignatures: false,
+      });
 
-                  const base58Tx = encode(serializedTx)
+      const base58Tx = encode(serializedTx);
 
       //             // Sign and send the transaction via canvasClient
-                  const results = await canvasClient?.signAndSendTransaction({
-                      unsignedTx: base58Tx,
-                      awaitCommitment: "confirmed",
-                      chainId: "solana:103",
-                  });
-                console.log('results : ',results);
+      const results = await canvasClient?.signAndSendTransaction({
+        unsignedTx: base58Tx,
+        awaitCommitment: "confirmed",
+        chainId: "solana:103",
+      });
+      if (results?.untrusted?.success) {
+          console.log('Transaction signed:', results.untrusted.signedTx);
+          // return results.untrusted.signedTx;
+      } else {
+          console.error('Failed to sign transaction');
+      }
+      console.log("results : ", results);
 
       //   trx.feePayer=publicKey;
       //   trx.recentBlockhash=(await connection.getLatestBlockhash("confirmed")).blockhash;
