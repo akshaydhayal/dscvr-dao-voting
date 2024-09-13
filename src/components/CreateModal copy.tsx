@@ -6,12 +6,10 @@ import { Buffer } from "buffer";
 import { clusterApiUrl, Connection, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 // import useCanvasWallet from "@/app/components/CanvasWalletProvider";
 import { Proposal } from "@/app/page";
-// import { useCanvasClient } from "@/lib/useCanvasClient";
-// import { CanvasClient } from "@dscvr-one/canvas-client-sdk";
-// import { registerCanvasWallet } from "@dscvr-one/canvas-wallet-adapter";
-import { encode } from "bs58";
-import { createProposalAsset } from "./createProposalAsset";
 import { useCanvasClient } from "@/lib/useCanvasClient";
+import { CanvasClient } from "@dscvr-one/canvas-client-sdk";
+import { registerCanvasWallet } from "@dscvr-one/canvas-wallet-adapter";
+import { encode } from "bs58";
 
 
 if (typeof window !== "undefined") {
@@ -30,11 +28,39 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
   const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
 
-  // const [canvasClient, setCanvasClient] = useState<CanvasClient | null>(null);
+  const [canvasClient, setCanvasClient] = useState<CanvasClient | null>(null);
 
+ useEffect(() => {
+        // const isIframe = () => {
+        //     try {
+        //         return window.self !== window.top;
+        //     } catch (e) {
+        //         return true;
+        //     }
+        // };
+
+        // setIframe(isIframe());
+
+        // if (isIframe()) {
+            const client = new CanvasClient();
+            registerCanvasWallet(client);
+            setCanvasClient(client);
+            console.log(client);
+            console.log("CanvasClient initialized");
+        // }
+    }, []);
 
 
   console.log("demo");
+  // const canvasClient1 = useCanvasClient();
+  // console.log("client : ", canvasClient1.client);
+  // const [canvasClient, setCanvasClient] = useState<CanvasClient | null>(null);
+  // console.log("client2 : ", canvasClient);
+  // async function makeReady(){
+  //   await canvasClient?.ready();
+  //   console.log("client2 : ", canvasClient);
+  // }
+  // makeReady();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -47,36 +73,104 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
 
   let publicKey = walletPublicKey;
 
-  
+  // if (walletAddress) {
+  //   publicKey = new PublicKey(walletAddress);
+  // }
+
   const proposalId = new BN(Date.now());
 
-   const { client } = useCanvasClient();
-   // client.co
-   const wallet = useWallet();
-  //  const { publicKey } = useWallet();
-   if (!wallet) {
-     console.log("Wallet not connected");
-     // wallet.connect()
-   }
-   console.log("wallet : ", wallet);
-
-   async function handleClick() {
-     await client?.connectWallet("solana:103");
-   }
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!publicKey) return;
     try {
       const connection = new Connection(clusterApiUrl("devnet"));
-      handleClick();
-      const nftTx=await createProposalAsset(wallet, setNftMintStatus);
+      // const walletSecret = [
+      //   12, 210, 152, 23, 3, 69, 14, 50, 194, 93, 159, 13, 6, 66, 248, 59, 238, 183, 241, 12, 201, 67, 59, 22, 127, 48, 105, 117, 50, 99, 79, 254, 9, 185, 177,
+      //   0, 10, 80, 91, 30, 246, 240, 177, 125, 7, 83, 128, 174, 38, 220, 71, 231, 43, 130, 253, 182, 16, 29, 233, 250, 246, 117, 221, 153,
+      // ];
+      // const keypair = Keypair.fromSecretKey(Uint8Array.from(walletSecret));
+      // const { proposalPDA } = await deriveProposalPDA(keypair.publicKey, proposalId);
+      const { proposalPDA } = await deriveProposalPDA(publicKey, proposalId);
+      setProposal(proposalPDA.toString());
+      console.log("Creating transaction...");
+
+      // const str = "5k8z2CULieyqz6fnHUtimgLMYFsu1sYfw4HAPz9eVCdzu3cgJJgGSESABer7scFCWM8iHpdcAfJXXsKWegbvDVPM";
+      // const encoder = new TextEncoder();
+      // const uint8Array = encoder.encode(str);
+      // console.log("unint8 keypair : ",uint8Array);
+      // const keypair = Keypair.fromSecretKey(uint8Array);
+
+      //@ts-ignore
+      const trx = await program.methods.createProposal(title, description, proposalId, point)
+        .accounts({
+          proposal: proposalPDA,
+          // user: keypair.publicKey,
+          user: publicKey,
+          systemProgram: web3.SystemProgram.programId,
+        })
+        // .signers([keypair])
+        .transaction();
+
+     
+      //             // Fetch the latest blockhash
+      // const { blockhash } = await connection.getLatestBlockhash({ commitment: "confirmed" });
+      // trx.recentBlockhash = blockhash;
+      // trx.feePayer = publicKey;
+
+      // //             // Serialize the transaction
+      // const serializedTx = trx.serialize({
+      //   requireAllSignatures: false,
+      //   verifySignatures: false,
+      // });
+
+      // const base58Tx = encode(serializedTx);
+
+      // //             // Sign and send the transaction via canvasClient
+      // const results = await canvasClient?.signAndSendTransaction({
+      //   unsignedTx: base58Tx,
+      //   awaitCommitment: "confirmed",
+      //   chainId: "solana:103",
+      // });
+      
+      //   trx.feePayer=publicKey;
+      //   trx.recentBlockhash=(await connection.getLatestBlockhash("confirmed")).blockhash;
+      //   trx.lastValidBlockHeight=(await connection.getLatestBlockhash("confirmed")).lastValidBlockHeight;
+      // await signTransaction(trx);
+      // const confiemedTx=await sendAndConfirmTransaction(connection,trx,[keypair])
+      // console.log(confiemedTx);
+      // console.log("Transaction created:", trx);
+      // console.log("Sending transaction...");
+
+      // @ts-ignore
+      // const signed=await signTransaction(trx);
+      // console.log(signed);
+
+      // let trxSign=await sendTransaction(signed, connection,{signers:[]});
+
+      // let trxSign=await sendTransaction(trx, connection,{signers:[]});
+      // console.log("Transaction confirmed:", trxSign);
+
+      // let trxSign=await sendTransaction(trx, connection, { signers: [] });
+      // const confirmation = await connection.confirmTransaction(trxSign, "confirmed");
+      // console.log("Transaction confirmed:", confirmation);
+      // let trxSign;
+      // if (walletAddress) {
+      //   trxSign = await signTransaction(trx);
+      // } else {
+      //   trxSign = await sendTransaction(trx, connection, { signers: [] });
+      //   const confirmation = await connection.confirmTransaction(trxSign, "confirmed");
+      //   console.log("Transaction confirmed:", confirmation);
+      // }
+
+      // console.log(`View on explorer: https://solana.fm/tx/${trxSign}?cluster=devnet-alpha`);
+
       // Save proposal data
-      if(!nftTx) return;
+
       const proposalData = {
         name: title,
         description,
-        address: publicKey.toBase58(),
+        address: proposalPDA.toString(),
       };
 
       const response = await fetch("/api/saveproposal", {
@@ -100,8 +194,6 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       setFailed(error);
     }
   };
-
-  const [nftMintStatus, setNftMintStatus] = useState(false);
 
   if (!isOpen) return null;
 
@@ -147,7 +239,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
             />
           </div>
           <div className="flex justify-between mt-4">
-            {/* {!proposalCreateLoading ? (
+            {!proposalCreateLoading ? (
               <button
                 type="submit"
                 className="px-4 py-2 mt-4 bg-blue-600 hover:bg-blue-500 text-white font-medium  rounded-md"
@@ -164,14 +256,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
                 <h2 className="text-lg font-medium text-white ">Creating Proposal</h2>
                 <div className="loader border-b-4  border-slate-100 rounded-full w-6 h-6 animate-spin"></div>
               </div>
-            )} */}
-
-            <button type="submit"
-              className="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 
-        px-4 rounded"
-            >
-              Create Proposal+Mint
-            </button>
+            )}
 
             <button type="button" onClick={onClose} className="bg-slate-600 mt-4 px-5 py-2 rounded-md">
               Cancel

@@ -58,7 +58,7 @@ export default function RootLayout({
         <meta name="og:image" content="https://my-canvas.com/preview-image.png" />
       </head>
       <body className="" style={{ height: "600px" }}>
-        {/* <div>
+        <div>
         <ConnectionProvider endpoint={endpoint}>
           <WalletProvider wallets={[]} autoConnect>
             <WalletModalProvider>
@@ -67,15 +67,16 @@ export default function RootLayout({
             </WalletModalProvider>
           </WalletProvider>
         </ConnectionProvider>
-        </div> */}
-        <AppWalletProvider>
+        </div>
+
+        {/* <AppWalletProvider>
           <CanvasWalletProvider>
             <Container>
               <Navbar/>
               {children}
               </Container>
           </CanvasWalletProvider>
-        </AppWalletProvider>
+        </AppWalletProvider> */}
       </body>
     </html>
   );

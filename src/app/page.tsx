@@ -56,8 +56,8 @@ const DarkRetroThemeHomepage= () => {
 
   return (
     <section className="w-full bg-[#121212] text-gray-100 min-h-screen">
-      {isModalOpen && <CreateProposal/>}
-      {/* {isModalOpen && <CreateProposalModal isOpen={isModalOpen} onClose={closeModal} setProposall={setProposal} />} */}
+      {/* {isModalOpen && <CreateProposal/>} */}
+      {isModalOpen && <CreateProposalModal isOpen={isModalOpen} onClose={closeModal} setProposall={setProposal} />}
 
       {/* <Navbar /> */}
 
