@@ -79,6 +79,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
 
   const proposalId = new BN(Date.now());
 
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!publicKey) return;
@@ -101,8 +102,7 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
       // const keypair = Keypair.fromSecretKey(uint8Array);
 
       //@ts-ignore
-      const trx = await program.methods
-        .createProposal(title, description, proposalId, point)
+      const trx = await program.methods.createProposal(title, description, proposalId, point)
         .accounts({
           proposal: proposalPDA,
           // user: keypair.publicKey,
@@ -112,37 +112,27 @@ const CreateProposalModal: React.FC<CreateProposalModalProps> = ({ isOpen, onClo
         // .signers([keypair])
         .transaction();
 
-      // console.log('client : ',canvasClient);
-      // const network = process.env.NEXT_PUBLIC_SOLANA_RPC || "https://api.devnet.solana.com/";
-      //             const connection = new Connection(network, 'confirmed');
-
+     
       //             // Fetch the latest blockhash
-      const { blockhash } = await connection.getLatestBlockhash({ commitment: "confirmed" });
-      trx.recentBlockhash = blockhash;
-      trx.feePayer = publicKey;
+      // const { blockhash } = await connection.getLatestBlockhash({ commitment: "confirmed" });
+      // trx.recentBlockhash = blockhash;
+      // trx.feePayer = publicKey;
 
-      //             // Serialize the transaction
-      const serializedTx = trx.serialize({
-        requireAllSignatures: false,
-        verifySignatures: false,
-      });
+      // //             // Serialize the transaction
+      // const serializedTx = trx.serialize({
+      //   requireAllSignatures: false,
+      //   verifySignatures: false,
+      // });
 
-      const base58Tx = encode(serializedTx);
+      // const base58Tx = encode(serializedTx);
 
-      //             // Sign and send the transaction via canvasClient
-      const results = await canvasClient?.signAndSendTransaction({
-        unsignedTx: base58Tx,
-        awaitCommitment: "confirmed",
-        chainId: "solana:103",
-      });
-      if (results?.untrusted?.success) {
-          console.log('Transaction signed:', results.untrusted.signedTx);
-          // return results.untrusted.signedTx;
-      } else {
-          console.error('Failed to sign transaction');
-      }
-      console.log("results : ", results);
-
+      // //             // Sign and send the transaction via canvasClient
+      // const results = await canvasClient?.signAndSendTransaction({
+      //   unsignedTx: base58Tx,
+      //   awaitCommitment: "confirmed",
+      //   chainId: "solana:103",
+      // });
+      
       //   trx.feePayer=publicKey;
       //   trx.recentBlockhash=(await connection.getLatestBlockhash("confirmed")).blockhash;
       //   trx.lastValidBlockHeight=(await connection.getLatestBlockhash("confirmed")).lastValidBlockHeight;

@@ -1,5 +1,6 @@
 "use client";
 
+import CreateProposal from "@/components/create";
 import CreateProposalModal from "@/components/CreateModal";
 import Navbar from "@/components/Navbar";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -55,7 +56,8 @@ const DarkRetroThemeHomepage= () => {
 
   return (
     <section className="w-full bg-[#121212] text-gray-100 min-h-screen">
-      {isModalOpen && <CreateProposalModal isOpen={isModalOpen} onClose={closeModal} setProposall={setProposal} />}
+      {isModalOpen && <CreateProposal/>}
+      {/* {isModalOpen && <CreateProposalModal isOpen={isModalOpen} onClose={closeModal} setProposall={setProposal} />} */}
 
       {/* <Navbar /> */}
 

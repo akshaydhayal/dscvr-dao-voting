@@ -1,38 +1,38 @@
-// "use client";
+"use client";
 
-// import { ReactNode, useEffect, useRef } from "react";
-// import { CanvasClient } from "@dscvr-one/canvas-client-sdk";
-// import useCanvasWallet from "./CanvasWalletProvider";
+import { ReactNode, useEffect, useRef } from "react";
+import { CanvasClient } from "@dscvr-one/canvas-client-sdk";
+import useCanvasWallet from "./CanvasWalletProvider";
 
-// export default function Container({ children }: { children: ReactNode }) {
-//   const containerRef = useRef<HTMLDivElement>(null);
-//   const canvasClientRef = useRef<CanvasClient | undefined>();
-//   const { iframe } = useCanvasWallet();
+export default function Container({ children }: { children: ReactNode }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasClientRef = useRef<CanvasClient | undefined>();
+  const { iframe } = useCanvasWallet();
 
-//   useEffect(() => {
-//     if (iframe) {
-//       canvasClientRef.current = new CanvasClient();
-//     }
+  useEffect(() => {
+    if (iframe) {
+      canvasClientRef.current = new CanvasClient();
+    }
 
-//     const resizeObserver = new ResizeObserver(() => {
-//       canvasClientRef.current?.resize();
-//     });
+    const resizeObserver = new ResizeObserver(() => {
+      canvasClientRef.current?.resize();
+    });
 
-//     if (containerRef.current) {
-//       resizeObserver.observe(containerRef.current);
-//     }
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
 
-//     return () => {
-//       if (containerRef.current) {
-//         resizeObserver.unobserve(containerRef.current);
-//       }
-//       canvasClientRef.current = undefined; // Cleanup
-//     };
-//   }, [iframe]); // Add iframe as a dependency
+    return () => {
+      if (containerRef.current) {
+        resizeObserver.unobserve(containerRef.current);
+      }
+      canvasClientRef.current = undefined; // Cleanup
+    };
+  }, [iframe]); // Add iframe as a dependency
 
-//   return (
-//     <main ref={containerRef} className="m-0">
-//       {children}
-//     </main>
-//   );
-// }
+  return (
+    <main ref={containerRef} className="m-0">
+      {children}
+    </main>
+  );
+}

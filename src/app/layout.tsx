@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import { Inter, Syne } from "next/font/google";
 import "./globals.css";
 import AppWalletProvider from "./components/AppWalletProvider";
-// import { CanvasWalletProvider } from "./components/CanvasWalletProvider";
-// import Container from "./components/container";
+import { CanvasWalletProvider } from "./components/CanvasWalletProvider";
+import Container from "./components/container";
 import Head from "next/head";
 import { useCanvasClient } from "@/lib/useCanvasClient";
 import { useResizeObserver } from "@/lib/useResizeObserver";
@@ -58,10 +58,8 @@ export default function RootLayout({
         <meta name="og:image" content="https://my-canvas.com/preview-image.png" />
       </head>
       <body className="" style={{ height: "600px" }}>
-        <div>
-
+        {/* <div>
         <ConnectionProvider endpoint={endpoint}>
-          {/* <WalletProvider wallets={[phantomWallet]} autoConnect> */}
           <WalletProvider wallets={[]} autoConnect>
             <WalletModalProvider>
               <Navbar />
@@ -69,12 +67,15 @@ export default function RootLayout({
             </WalletModalProvider>
           </WalletProvider>
         </ConnectionProvider>
-        </div>
-        {/* <AppWalletProvider>
+        </div> */}
+        <AppWalletProvider>
           <CanvasWalletProvider>
-            <Container>{children}</Container>
+            <Container>
+              <Navbar/>
+              {children}
+              </Container>
           </CanvasWalletProvider>
-        </AppWalletProvider> */}
+        </AppWalletProvider>
       </body>
     </html>
   );
