@@ -52,7 +52,7 @@ const Proposals = () => {
         const proposal = proposals.find((p: any) => p.address === proposalPDA); // Assuming proposals have an `id` field
         console.log("proposal found : ",proposal);
         if (!proposal) {
-          console.error("Proposal not found");
+          console.error("Proposal Loading");
           return;
         }
 
@@ -98,6 +98,7 @@ const Proposals = () => {
       }
 
       const nftTx=await createVoteAsset(wallet, setNftMintStatus);
+      console.log("nftTx : ",nftTx);
       if(!nftTx) return;
       // You can now handle the vote logic by making a POST request to update the votes in your backend
       const response=await fetch("/api/saveproposal", {
@@ -173,7 +174,7 @@ const Proposals = () => {
               </div>
             </>
           ) : (
-            <p className="text-center">Proposal not found</p>
+            <p className="text-center">Proposal Loading</p>
           )}
         </div>
       </div>
