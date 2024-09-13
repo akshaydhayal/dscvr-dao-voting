@@ -20,12 +20,13 @@
     "description": "i",
     "address": "5YXQY3kxYwRoRgNiosdvW55x71NDeVsAxnZDkcVSZ6HV",
     "voters": [
-      "9fGRk...something"
+      "9fGRk...something",
+      "Ec1dut2RP162WKZ1etv9YTDeeesNqSoseGX7uu9JCm5u"
     ],
     "votes": {
       "for": 1,
       "against": 0,
-      "abstain": 0
+      "abstain": 1
     }
   },
   {
@@ -37,6 +38,19 @@
       "for": 0,
       "against": 0,
       "abstain": 0
+    }
+  },
+  {
+    "name": "l",
+    "description": "l",
+    "address": "Ec1dut2RP162WKZ1etv9YTDeeesNqSoseGX7uu9JCm5u",
+    "voters": [
+      "Ec1dut2RP162WKZ1etv9YTDeeesNqSoseGX7uu9JCm5u"
+    ],
+    "votes": {
+      "for": 0,
+      "against": 0,
+      "abstain": 1
     }
   }
 ]

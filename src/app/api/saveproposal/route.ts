@@ -163,10 +163,10 @@ export async function PUT(req: NextRequest) {
     // Update the vote count
     proposals[proposalIndex].votes = votes;
 
-    // Update the list of voters if the address hasn't already voted
-    if (!proposals[proposalIndex].voters.includes(voterAddress)) {
-      proposals[proposalIndex].voters.push(voterAddress);
-    }
+    // // Update the list of voters if the address hasn't already voted
+    // if (!proposals[proposalIndex].voters.includes(voterAddress)) {
+    //   proposals[proposalIndex].voters.push(voterAddress);
+    // }
 
     // Write the updated proposals data back to the file
     const updatedData = JSON.stringify(proposals, null, 2);
