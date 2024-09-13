@@ -30,8 +30,9 @@ const Proposals = () => {
   const [forVote, setForVote] = useState(0);
   const [againstVote, setAgainstVote] = useState(0);
   const [abstainVote, setAbstainVote] = useState(0);
-
+  
   const { client } = useCanvasClient();
+  const wallet = useWallet();
 
   useEffect(() => {
     const fetchProposal = async () => {
@@ -165,6 +166,7 @@ const Proposals = () => {
             <div className="hover:border-slate-900 rounded">
               <p className="text-lg text-slate-300 p-1 px-2">Connect Wallet to Vote</p>
             </div>
+            {/* @ts-ignore */}
             <button className="bg-white text-black p-1 px-4" onClick={() => setBtnClickedWithoutConnect(false)}>
               Close
             </button>
