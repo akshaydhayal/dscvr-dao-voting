@@ -167,9 +167,9 @@ const Proposals = () => {
               <p className="text-lg text-slate-300 p-1 px-2">Connect Wallet to Vote</p>
             </div>
             {/* @ts-ignore */}
-            <button className="bg-white text-black p-1 px-4" onClick={() => setBtnClickedWithoutConnect(false)}>
+            {/* <button className="bg-white text-black p-1 px-4" onClick={() => setBtnClickedWithoutConnect(false)}>
               Close
-            </button>
+            </button> */}
           </div>
         </div>
       )}

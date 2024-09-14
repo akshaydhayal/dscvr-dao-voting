@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 export interface Proposal {
   name: string;
@@ -43,20 +44,33 @@ const DarkRetroThemeHomepage= () => {
 
   const daoName = "Solana DAO";
   const daoDescription = "Empower Your Voice: Propose, Vote, and Earn Exclusive NFTs for Your Participation";
-
+  
   const openModal = () => {
-    if(!publicKey){
-      alert("Connect Wallet first");
-      return;
-    }
+    // if(!publicKey){
+    //   alert("Connect Wallet first");
+    //   return;
+    // }
     setIsModalOpen(true)
   };
   const closeModal = () => setIsModalOpen(false);
 
+  if(isModalOpen && !publicKey){
+    return (
+      <div className="w-screen h-screen absolute top-0  backdrop-blur-sm flex  justify-center items-center">
+        <div className="flex gap-2 items-center bg-[#121212] justify-center border w-96 h-24 border-slate-600">
+          <div className="hover:border-slate-900 rounded">
+            <p className="text-lg text-slate-300 p-1 px-2">Connect Wallet to Create Proposal</p>
+          </div>
+        <WalletMultiButton/>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <section className="w-full bg-[#121212] text-gray-100 min-h-screen">
       {/* {isModalOpen && <CreateProposal/>} */}
-      {isModalOpen && <CreateProposalModal isOpen={isModalOpen} onClose={closeModal} setProposall={setProposal} />}
+      {isModalOpen && publicKey && <CreateProposalModal isOpen={isModalOpen} onClose={closeModal} setProposall={setProposal} />}
 
       {/* <Navbar /> */}
 
@@ -88,24 +102,25 @@ const DarkRetroThemeHomepage= () => {
         </div>
         <div className="space-y-6">
           {/* {proposals.length > 0 && proposals.map((proposal, index) => ( */}
-          {proposalsLoading? 
-          <div className="flex items-center gap-8 justify-center mt-16">
-            <h2 className="text-2xl font-bold text-slate-300 font-mono">Loading Proposals</h2>
-            <div className="loader border-b-4 border-blue-500 border-solid rounded-full w-8 h-8 animate-spin"></div>
-          </div>:(
-          proposals.length>0 && proposals.map((proposal, index) => (
-          <div className="bg-gradient-to-b from-gray-700 to-gray-900 border border-slate-700 p-4 rounded-lg shadow-lg 
+          {proposalsLoading ? (
+            <div className="flex items-center gap-8 justify-center mt-16">
+              <h2 className="text-2xl font-bold text-slate-300 font-mono">Loading Proposals</h2>
+              <div className="loader border-b-4 border-blue-500 border-solid rounded-full w-8 h-8 animate-spin"></div>
+            </div>
+          ) : (
+            proposals.length > 0 &&
+            proposals.map((proposal, index) => (
+              <div
+                className="bg-gradient-to-b from-gray-700 to-gray-900 border border-slate-700 p-4 rounded-lg shadow-lg 
           cursor-pointer transform transition duration-500 hover:scale-[1.03] hover:shadow-xl"
-          //@ts-ignore  
-          onClick={() => router.push(`/create/${proposal.address}`)}
-            key={index}
-          >
-            <h3 className="text-2xl text-purple-400 font-semibold font-serif">{proposal.name}</h3>
-            {/* <p className="text-4xl font-medium text-white mt-0 font-serif">{proposal.votesAgainst.toNumber()}</p> */}
-            <p className="text-lg font-medium text-slate-100 mt-2 font-mono tracking-tighter">
-              {proposal.description}
-            </p>
-          </div>
+                //@ts-ignore
+                onClick={() => router.push(`/create/${proposal.address}`)}
+                key={index}
+              >
+                <h3 className="text-2xl text-purple-400 font-semibold font-serif">{proposal.name}</h3>
+                {/* <p className="text-4xl font-medium text-white mt-0 font-serif">{proposal.votesAgainst.toNumber()}</p> */}
+                <p className="text-lg font-medium text-slate-100 mt-2 font-mono tracking-tighter">{proposal.description}</p>
+              </div>
               // <div
               //   onClick={() => router.push(`/create/${proposal.address}`)}
               //   key={index}
@@ -115,9 +130,18 @@ const DarkRetroThemeHomepage= () => {
               //   <p className="mt-2 text-slate-300">{proposal.description}</p>
               // </div>
             ))
-            )}
+          )}
         </div>
       </div>
+      {/* {isModalOpen && !publicKey && (
+        <div className="w-screen h-screen absolute top-0 backdrop-blur-md flex justify-center items-center">
+          <div className="flex gap-2 items-center bg-[#121212] justify-center border w-80 h-24 border-slate-600">
+            <div className="hover:border-slate-900 rounded">
+              <p className="text-lg text-slate-300 p-1 px-2">Connect Wallet to Vote</p>
+            </div>
+          </div>
+        </div>
+      )} */}
     </section>
   );
 };
