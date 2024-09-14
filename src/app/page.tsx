@@ -57,7 +57,7 @@ const DarkRetroThemeHomepage= () => {
   if(isModalOpen && !publicKey){
     return (
       <div className="w-screen h-screen absolute top-0  backdrop-blur-sm flex  justify-center items-center">
-        <div className="flex gap-2 items-center bg-[#121212] justify-center border w-2/5 h-24 border-slate-600">
+        <div className="flex gap-2 items-center bg-[#121212] justify-center border w-[90vw] h-24 border-slate-600">
           <div className="hover:border-slate-900 rounded">
             <p className="text-lg text-slate-300 p-1 px-2">Connect Wallet to Create Proposal</p>
           </div>
